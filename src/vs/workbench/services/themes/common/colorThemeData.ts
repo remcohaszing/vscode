@@ -276,6 +276,7 @@ export class ColorThemeData implements IWorkbenchColorTheme {
 			underline: style.underline,
 			strikethrough: style.strikethrough,
 			italic: style.italic,
+			sizeFactor: 1
 		};
 	}
 

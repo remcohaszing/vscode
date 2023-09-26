@@ -143,7 +143,10 @@ export class ViewLines extends ViewPart implements IVisibleLinesHost<ViewLine>, 
 
 		PartFingerprints.write(this.domNode, PartFingerprint.ViewLines);
 		this.domNode.setClassName(`view-lines ${MOUSE_CURSOR_TEXT_CSS_CLASS_NAME}`);
+		// console.log(fontInfo);
+		// console.log(wrappingInfo);
 		applyFontInfo(this.domNode, fontInfo);
+		// console.log(this.domNode.domNode.outerHTML);
 
 		// --- width & height
 		this._maxLineWidth = 0;
@@ -580,6 +583,8 @@ export class ViewLines extends ViewPart implements IVisibleLinesHost<ViewLine>, 
 				}
 			}
 		}
+
+		// console.log(longestLineNumber);
 
 		if (longestLineNumber === -1) {
 			return;

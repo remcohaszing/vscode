@@ -23,8 +23,13 @@ export class LinePart {
 		public readonly endIndex: number,
 		public readonly type: string,
 		public readonly metadata: number,
-		public readonly containsRTL: boolean
-	) { }
+		public readonly containsRTL: boolean,
+		public readonly sizeFactor: number
+	) {
+		if (sizeFactor === undefined) {
+			// debugger;
+		}
+	}
 
 	public isWhitespace(): boolean {
 		return (this.metadata & LinePartMetadata.IS_WHITESPACE_MASK ? true : false);

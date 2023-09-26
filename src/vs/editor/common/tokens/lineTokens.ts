@@ -12,6 +12,7 @@ export interface IViewLineTokens {
 	getForeground(tokenIndex: number): ColorId;
 	getEndOffset(tokenIndex: number): number;
 	getClassName(tokenIndex: number): string;
+	getSizeFactor(tokenIndex: number): number;
 	getInlineStyle(tokenIndex: number, colorMap: string[]): string;
 	getPresentation(tokenIndex: number): ITokenPresentation;
 	findTokenIndexAtOffset(offset: number): number;
@@ -114,6 +115,12 @@ export class LineTokens implements IViewLineTokens {
 	public getClassName(tokenIndex: number): string {
 		const metadata = this._tokens[(tokenIndex << 1) + 1];
 		return TokenMetadata.getClassNameFromMetadata(metadata);
+	}
+
+	public getSizeFactor(tokenIndex: number): number {
+		const metadata = this._tokens[(tokenIndex << 1) + 1];
+		console.log(tokenIndex, this._tokens);
+		return TokenMetadata.getSizeFactor(metadata);
 	}
 
 	public getInlineStyle(tokenIndex: number, colorMap: string[]): string {
@@ -295,6 +302,10 @@ class SliceLineTokens implements IViewLineTokens {
 
 	public getClassName(tokenIndex: number): string {
 		return this._source.getClassName(this._firstTokenIndex + tokenIndex);
+	}
+
+	public getSizeFactor(tokenIndex: number): number {
+		return this._source.getSizeFactor(this._firstTokenIndex + tokenIndex);
 	}
 
 	public getInlineStyle(tokenIndex: number, colorMap: string[]): string {

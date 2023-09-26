@@ -80,6 +80,9 @@ export class SemanticTokensProviderStyling {
 						const foregroundBits = (tokenStyle.foreground) << MetadataConsts.FOREGROUND_OFFSET;
 						metadata |= foregroundBits | MetadataConsts.SEMANTIC_USE_FOREGROUND;
 					}
+					if (tokenStyle.sizeFactor) {
+						// XXX forward this
+					}
 					if (metadata === 0) {
 						// Nothing!
 						metadata = SemanticTokensProviderStylingConstants.NO_STYLING;

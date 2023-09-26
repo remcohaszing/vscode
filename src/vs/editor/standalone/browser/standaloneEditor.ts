@@ -45,6 +45,8 @@ import { IOpenerService } from 'vs/platform/opener/common/opener';
  * The editor will read the size of `domElement`.
  */
 export function create(domElement: HTMLElement, options?: IStandaloneEditorConstructionOptions, override?: IEditorOverrideServices): IStandaloneCodeEditor {
+	options ||= {};
+	options.wordWrap = 'wordWrapColumn';
 	const instantiationService = StandaloneServices.initialize(override || {});
 	return instantiationService.createInstance(StandaloneEditor, domElement, options);
 }

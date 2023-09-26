@@ -430,8 +430,9 @@ export class CodeCell extends Disposable {
 		let startOffset = 0;
 		for (let j = 0, lenJ = viewLineTokens.getCount(); j < lenJ; j++) {
 			const type = viewLineTokens.getClassName(j);
+			const sizeFactor = viewLineTokens.getSizeFactor(j);
 			const endIndex = viewLineTokens.getEndOffset(j);
-			result += `<span class="${type}">${strings.escape(line.substring(startOffset, endIndex))}</span>`;
+			result += `<span class="${type}" style="font-size:${sizeFactor}em">${strings.escape(line.substring(startOffset, endIndex))}</span>`;
 			startOffset = endIndex;
 		}
 

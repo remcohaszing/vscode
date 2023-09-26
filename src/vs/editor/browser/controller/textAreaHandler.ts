@@ -96,6 +96,7 @@ class VisibleTextAreaData {
 					bold: false,
 					underline: false,
 					strikethrough: false,
+					sizeFactor: 1
 				};
 			}
 		}

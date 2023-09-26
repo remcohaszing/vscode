@@ -30,6 +30,10 @@ export class TestLineToken {
 		return TokenMetadata.getClassNameFromMetadata(this._metadata);
 	}
 
+	public getSizeFactor(): number {
+		return TokenMetadata.getSizeFactor(this._metadata);
+	}
+
 	public getInlineStyle(colorMap: string[]): string {
 		return TokenMetadata.getInlineStyleFromMetadata(this._metadata, colorMap);
 	}
@@ -89,6 +93,10 @@ export class TestLineTokens implements IViewLineTokens {
 
 	public getClassName(tokenIndex: number): string {
 		return this._actual[tokenIndex].getType();
+	}
+
+	public getSizeFactor(tokenIndex: number): number {
+		return this._actual[tokenIndex].getSizeFactor();
 	}
 
 	public getInlineStyle(tokenIndex: number, colorMap: string[]): string {

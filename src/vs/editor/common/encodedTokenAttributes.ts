@@ -122,6 +122,10 @@ export class TokenMetadata {
 		return (metadata & MetadataConsts.BACKGROUND_MASK) >>> MetadataConsts.BACKGROUND_OFFSET;
 	}
 
+	public static getSizeFactor(metadata: number): number {
+		return 0.5;
+	}
+
 	public static getClassNameFromMetadata(metadata: number): string {
 		const foreground = this.getForeground(metadata);
 		let className = 'mtk' + foreground;
@@ -145,6 +149,7 @@ export class TokenMetadata {
 
 	public static getInlineStyleFromMetadata(metadata: number, colorMap: string[]): string {
 		const foreground = this.getForeground(metadata);
+		const sizeFactor = this.getSizeFactor(metadata);
 		const fontStyle = this.getFontStyle(metadata);
 
 		let result = `color: ${colorMap[foreground]};`;
@@ -163,13 +168,16 @@ export class TokenMetadata {
 		}
 		if (textDecoration) {
 			result += `text-decoration:${textDecoration};`;
-
+			if (sizeFactor !== 1) {
+				result += `font-size:${sizeFactor}em`;
+			}
 		}
 		return result;
 	}
 
 	public static getPresentationFromMetadata(metadata: number): ITokenPresentation {
 		const foreground = this.getForeground(metadata);
+		const sizeFactor = this.getSizeFactor(metadata);
 		const fontStyle = this.getFontStyle(metadata);
 
 		return {
@@ -178,6 +186,7 @@ export class TokenMetadata {
 			bold: Boolean(fontStyle & FontStyle.Bold),
 			underline: Boolean(fontStyle & FontStyle.Underline),
 			strikethrough: Boolean(fontStyle & FontStyle.Strikethrough),
+			sizeFactor: sizeFactor,
 		};
 	}
 }
@@ -190,4 +199,5 @@ export interface ITokenPresentation {
 	bold: boolean;
 	underline: boolean;
 	strikethrough: boolean;
+	sizeFactor: number;
 }

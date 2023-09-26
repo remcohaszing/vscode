@@ -11,6 +11,7 @@ export interface ITokenThemeRule {
 	foreground?: string;
 	background?: string;
 	fontStyle?: string;
+	sizeFactor?: number;
 }
 
 export class ParsedTokenThemeRule {

@@ -1189,6 +1189,7 @@ declare namespace monaco.editor {
 		foreground?: string;
 		background?: string;
 		fontStyle?: string;
+		sizeFactor?: number;
 	}
 
 	/**

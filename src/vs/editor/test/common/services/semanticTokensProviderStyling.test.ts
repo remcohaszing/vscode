@@ -47,7 +47,8 @@ suite('ModelService', () => {
 							bold: undefined,
 							underline: undefined,
 							strikethrough: undefined,
-							italic: undefined
+							italic: undefined,
+							sizeFactor: 1
 						};
 					}
 				};
@@ -99,7 +100,8 @@ suite('ModelService', () => {
 							bold: undefined,
 							underline: undefined,
 							strikethrough: undefined,
-							italic: undefined
+							italic: undefined,
+							sizeFactor: 1
 						};
 					}
 				};
@@ -151,7 +153,8 @@ suite('ModelService', () => {
 							bold: undefined,
 							underline: undefined,
 							strikethrough: undefined,
-							italic: undefined
+							italic: undefined,
+							sizeFactor: 1
 						};
 					}
 				};

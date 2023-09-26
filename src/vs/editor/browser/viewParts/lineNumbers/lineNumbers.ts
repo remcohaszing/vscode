@@ -16,6 +16,7 @@ import { editorDimmedLineNumber, editorLineNumbers } from 'vs/editor/common/core
 
 export class LineNumbersOverlay extends DynamicViewOverlay {
 
+	// XXX
 	public static readonly CLASS_NAME = 'line-numbers';
 
 	private readonly _context: ViewContext;

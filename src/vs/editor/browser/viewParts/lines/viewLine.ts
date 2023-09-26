@@ -157,6 +157,7 @@ export class ViewLine implements IVisibleLine {
 			return false;
 		}
 
+		// debugger;
 		this._isMaybeInvalid = false;
 
 		const lineData = viewportData.getViewLineRenderingData(lineNumber);
@@ -219,6 +220,7 @@ export class ViewLine implements IVisibleLine {
 			return false;
 		}
 
+		// XXX
 		sb.appendString('<div style="top:');
 		sb.appendString(String(deltaTop));
 		sb.appendString('px;height:');
@@ -268,6 +270,8 @@ export class ViewLine implements IVisibleLine {
 		if (!this._renderedViewLine) {
 			return 0;
 		}
+		// console.log(context);
+		// debugger;
 		return this._renderedViewLine.getWidth(context);
 	}
 

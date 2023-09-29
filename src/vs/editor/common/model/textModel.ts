@@ -1778,6 +1778,12 @@ export class TextModel extends Disposable implements model.ITextModel, IDecorati
 		return this._decorationsTree.getAllTextDecorations(this, ownerId);
 	}
 
+	public getTextDecorationsInRange(filterRange: Range, filterOwnerId: number): model.IModelDecoration[] {
+		const startOffset = this._buffer.getOffsetAt(filterRange.startLineNumber, filterRange.startColumn);
+		const endOffset = this._buffer.getOffsetAt(filterRange.endLineNumber, filterRange.endColumn);
+		return this._decorationsTree.searchTextDecorations(this, startOffset, endOffset, filterOwnerId);
+	}
+
 	private _getDecorationsInRange(filterRange: Range, filterOwnerId: number, filterOutValidation: boolean, onlyMarginDecorations: boolean): model.IModelDecoration[] {
 		const startOffset = this._buffer.getOffsetAt(filterRange.startLineNumber, filterRange.startColumn);
 		const endOffset = this._buffer.getOffsetAt(filterRange.endLineNumber, filterRange.endColumn);
@@ -2091,6 +2097,13 @@ class DecorationsTrees {
 		return this._ensureNodesHaveRanges(host, result);
 	}
 
+	public searchTextDecorations(host: IDecorationsTreesHost, start: number, end: number, filterOwnerId: number): model.IModelDecoration[] {
+		const versionId = host.getVersionId();
+		let result = this._decorationsTree0.intervalSearch(start, end, filterOwnerId, true, versionId, false);
+		result = result.concat(this._injectedTextDecorationsTree.intervalSearch(start, end, filterOwnerId, true, versionId, false));
+		return this._ensureNodesHaveRanges(host, result);
+	}
+
 	public getAll(host: IDecorationsTreesHost, filterOwnerId: number, filterOutValidation: boolean, overviewRulerOnly: boolean, onlyMarginDecorations: boolean): model.IModelDecoration[] {
 		const versionId = host.getVersionId();
 		const result = this._search(filterOwnerId, filterOutValidation, overviewRulerOnly, versionId, onlyMarginDecorations);
@@ -2315,6 +2328,7 @@ export class ModelDecorationOptions implements model.IModelDecorationOptions {
 	readonly hoverMessage: IMarkdownString | IMarkdownString[] | null;
 	readonly glyphMarginHoverMessage: IMarkdownString | IMarkdownString[] | null;
 	readonly isWholeLine: boolean;
+	readonly lineHeight?: number | undefined;
 	readonly showIfCollapsed: boolean;
 	readonly collapseOnReplaceEdit: boolean;
 	readonly overviewRuler: ModelDecorationOverviewRulerOptions | null;
@@ -2350,6 +2364,7 @@ export class ModelDecorationOptions implements model.IModelDecorationOptions {
 		this.glyphMarginHoverMessage = options.glyphMarginHoverMessage || null;
 		this.lineNumberHoverMessage = options.lineNumberHoverMessage || null;
 		this.isWholeLine = options.isWholeLine || false;
+		this.lineHeight = options.lineHeight;
 		this.showIfCollapsed = options.showIfCollapsed || false;
 		this.collapseOnReplaceEdit = options.collapseOnReplaceEdit || false;
 		this.overviewRuler = options.overviewRuler ? new ModelDecorationOverviewRulerOptions(options.overviewRuler) : null;

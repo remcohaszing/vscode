@@ -165,8 +165,22 @@ export class ViewCursor {
 				left -= paddingLeft;
 			}
 
-			const top = ctx.getVerticalOffsetForLineNumber(position.lineNumber + 1) - this._lineHeight - ctx.bigNumbersDelta;
-			return new ViewCursorRenderData(top, left, paddingLeft, width, this._lineHeight, textContent, textContentClassName);
+			let height = 0;
+			const range = new Range(position.lineNumber, position.column, position.lineNumber, position.column);
+			const positionDecorations = this._context.viewModel.getDecorationsInViewport(range);
+			for (let index = 0; index < positionDecorations.length; index++) {
+				const decoration = positionDecorations[index];
+				const lineHeight = decoration.options.lineHeight;
+				if (lineHeight) {
+					height = Math.max(height, lineHeight);
+				}
+			}
+			height = height || this._lineHeight;
+			// const top = ctx.getVerticalOffsetForLineNumber(position.lineNumber) + height - ctx.bigNumbersDelta;
+			const top = ctx.getVerticalOffsetForLineNumber(position.lineNumber + 1) - ctx.bigNumbersDelta - height;
+			// const top = bottom - height;
+			// console.log({ top, bottom });
+			return new ViewCursorRenderData(top, left, paddingLeft, width, height, textContent, textContentClassName);
 		}
 
 		const visibleRangeForCharacter = ctx.linesVisibleRangesForRange(new Range(position.lineNumber, position.column, position.lineNumber, position.column + nextGrapheme.length), false);
@@ -195,22 +209,27 @@ export class ViewCursor {
 			textContentClassName = this._getTokenClassName(position);
 		}
 
-		let top = ctx.getVerticalOffsetForLineNumber(position.lineNumber) - ctx.bigNumbersDelta;
-		let height = this._lineHeight;
+		const top = ctx.getVerticalOffsetForLineNumber(position.lineNumber) - ctx.bigNumbersDelta;
+		const bottom = ctx.getVerticalOffsetForLineNumber(position.lineNumber + 1) - ctx.bigNumbersDelta;
 
-		// Underline might interfere with clicking
-		if (this._cursorStyle === TextEditorCursorStyle.Underline || this._cursorStyle === TextEditorCursorStyle.UnderlineThin) {
-			top += this._lineHeight - 2;
-			height = 2;
-		}
-
-		return new ViewCursorRenderData(top, range.left, 0, width, height, textContent, textContentClassName);
+		return new ViewCursorRenderData(top, range.left, 0, width, bottom - top, textContent, textContentClassName);
 	}
 
 	private _getTokenClassName(position: Position): string {
 		const lineData = this._context.viewModel.getViewLineData(position.lineNumber);
 		const tokenIndex = lineData.tokens.findTokenIndexAtOffset(position.column - 1);
-		return lineData.tokens.getClassName(tokenIndex);
+		const decorations = this._context.viewModel.getDecorationsInViewport(new Range(position.lineNumber, position.column, position.lineNumber, position.column));
+		let className = lineData.tokens.getClassName(tokenIndex);
+		if (decorations) {
+			for (const decoration of decorations) {
+				const inlineClassName = decoration.options.inlineClassName;
+				if (inlineClassName) {
+					className += ' ' + inlineClassName;
+				}
+			}
+		}
+		console.log(className);
+		return className;
 	}
 
 	public prepareRender(ctx: RenderingContext): void {

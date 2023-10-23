@@ -13,7 +13,7 @@ export function applyFontInfo(domNode: FastDomNode<HTMLElement> | HTMLElement, f
 		domNode.setFontSize(fontInfo.fontSize);
 		domNode.setFontFeatureSettings(fontInfo.fontFeatureSettings);
 		domNode.setFontVariationSettings(fontInfo.fontVariationSettings);
-		domNode.setLineHeight(fontInfo.lineHeight);
+		// domNode.setLineHeight(fontInfo.lineHeight);
 		domNode.setLetterSpacing(fontInfo.letterSpacing);
 	} else {
 		domNode.style.fontFamily = fontInfo.getMassagedFontFamily();

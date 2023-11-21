@@ -8,7 +8,7 @@ import { WrappingIndent } from './config/editorOptions.js';
 import { FontInfo } from './config/fontInfo.js';
 import { Position } from './core/position.js';
 import { InjectedTextCursorStops, InjectedTextOptions, PositionAffinity } from './model.js';
-import { LineInjectedText } from './textModelEvents.js';
+import { InlineClassName, LineInjectedText } from './textModelEvents.js';
 
 /**
  * *input*:
@@ -331,6 +331,7 @@ export class OutputPosition {
 export interface ILineBreaksComputerContext {
 	getLineContent(lineNumber: number): string;
 	getLineInjectedText(lineNumber: number): LineInjectedText[] | null;
+	getLineInlineClassNames(lineNumber: number): InlineClassName[] | null;
 }
 
 export interface ILineBreaksComputerFactory {

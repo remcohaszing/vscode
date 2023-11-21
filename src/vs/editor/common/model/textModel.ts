@@ -37,7 +37,7 @@ import { ILanguageConfigurationService } from '../languages/languageConfiguratio
 import * as model from '../model.js';
 import { IBracketPairsTextModelPart } from '../textModelBracketPairs.js';
 import { EditSources, TextModelEditSource } from '../textModelEditSource.js';
-import { IModelContentChangedEvent, IModelDecorationsChangedEvent, IModelOptionsChangedEvent, InternalModelContentChangeEvent, LineInjectedText, ModelFontChanged, ModelFontChangedEvent, ModelInjectedTextChangedEvent, ModelLineHeightChanged, ModelLineHeightChangedEvent, ModelRawChange, ModelRawContentChangedEvent, ModelRawEOLChanged, ModelRawFlush, ModelRawLineChanged, ModelRawLinesDeleted, ModelRawLinesInserted } from '../textModelEvents.js';
+import { IModelContentChangedEvent, IModelDecorationsChangedEvent, IModelOptionsChangedEvent, InlineClassName, InternalModelContentChangeEvent, LineInjectedText, ModelFontChanged, ModelFontChangedEvent, ModelInjectedTextChangedEvent, ModelLineHeightChanged, ModelLineHeightChangedEvent, ModelRawChange, ModelRawContentChangedEvent, ModelRawEOLChanged, ModelRawFlush, ModelRawLineChanged, ModelRawLinesDeleted, ModelRawLinesInserted } from '../textModelEvents.js';
 import { IGuidesTextModelPart } from '../textModelGuides.js';
 import { ITokenizationTextModelPart } from '../tokenizationTextModelPart.js';
 import { LineTokens, TokenArray } from '../tokens/lineTokens.js';
@@ -1860,6 +1860,14 @@ export class TextModel extends Disposable implements model.ITextModel, IDecorati
 		return LineInjectedText.fromDecorations(result).filter(t => t.lineNumber === lineNumber);
 	}
 
+	public getLineInlineClassNames(lineNumber: number, ownerId: number = 0): InlineClassName[] {
+		const startOffset = this._buffer.getOffsetAt(lineNumber, 1);
+		const endOffset = startOffset + this._buffer.getLineLength(lineNumber);
+
+		const result = this._decorationsTree.searchTextDecorations(this, startOffset, endOffset, ownerId);
+		return InlineClassName.fromDecorations(result, this._buffer).filter(t => t.lineNumber === lineNumber);
+	}
+
 	public getFontDecorationsInRange(range: IRange, ownerId: number = 0): model.IModelDecoration[] {
 		const startOffset = this._buffer.getOffsetAt(range.startLineNumber, range.startColumn);
 		const endOffset = this._buffer.getOffsetAt(range.endLineNumber, range.endColumn);
@@ -2259,6 +2267,13 @@ class DecorationsTrees {
 		const versionId = host.getVersionId();
 		const result = this._injectedTextDecorationsTree.search(filterOwnerId, false, false, versionId, false);
 		return this._ensureNodesHaveRanges(host, result).filter((i) => i.options.showIfCollapsed || !i.range.isEmpty());
+	}
+
+	public searchTextDecorations(host: IDecorationsTreesHost, start: number, end: number, filterOwnerId: number): model.IModelDecoration[] {
+		const versionId = host.getVersionId();
+		let result = this._decorationsTree0.intervalSearch(start, end, filterOwnerId, true, false, versionId, false);
+		result = result.concat(this._injectedTextDecorationsTree.intervalSearch(start, end, filterOwnerId, true, false, versionId, false));
+		return this._ensureNodesHaveRanges(host, result);
 	}
 
 	public getAllCustomLineHeights(host: IDecorationsTreesHost, filterOwnerId: number): model.IModelDecoration[] {

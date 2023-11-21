@@ -19,7 +19,7 @@ import { IWordAtPosition } from './core/wordHelper.js';
 import { FormattingOptions } from './languages.js';
 import { ILanguageSelection } from './languages/language.js';
 import { IBracketPairsTextModelPart } from './textModelBracketPairs.js';
-import { IModelContentChangedEvent, IModelDecorationsChangedEvent, IModelLanguageChangedEvent, IModelLanguageConfigurationChangedEvent, IModelOptionsChangedEvent, IModelTokensChangedEvent, LineInjectedText, ModelFontChangedEvent, ModelLineHeightChangedEvent } from './textModelEvents.js';
+import { IModelContentChangedEvent, IModelDecorationsChangedEvent, IModelLanguageChangedEvent, IModelLanguageConfigurationChangedEvent, IModelOptionsChangedEvent, IModelTokensChangedEvent, InlineClassName, LineInjectedText, ModelFontChangedEvent, ModelLineHeightChangedEvent } from './textModelEvents.js';
 import { IModelContentChange } from './model/mirrorTextModel.js';
 import { IGuidesTextModelPart } from './textModelGuides.js';
 import { ITokenizationTextModelPart } from './tokenizationTextModelPart.js';
@@ -861,6 +861,12 @@ export interface ITextModel {
 	 * @internal
 	 */
 	getLineInjectedText(lineNumber: number, ownerId?: number): LineInjectedText[];
+
+	/**
+	 * Get the inline class name decorations that affect line wrapping.
+	 * @internal
+	 */
+	getLineInlineClassNames(lineNumber: number, ownerId: number): InlineClassName[];
 
 	/**
 	 * Get the text length for a certain line.

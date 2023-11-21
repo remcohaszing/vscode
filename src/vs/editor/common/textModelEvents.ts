@@ -6,7 +6,7 @@
 import { IPosition } from './core/position.js';
 import { IRange, Range } from './core/range.js';
 import { Selection } from './core/selection.js';
-import { IModelDecoration, InjectedTextOptions } from './model.js';
+import { IModelDecoration, InjectedTextOptions, ITextBuffer } from './model.js';
 import { IModelContentChange } from './model/mirrorTextModel.js';
 import { AnnotationsUpdate } from './model/tokens/annotations.js';
 import { TextModelEditSource } from './textModelEditSource.js';
@@ -232,6 +232,52 @@ export const enum RawContentChangedType {
  */
 export class ModelRawFlush {
 	public readonly changeType = RawContentChangedType.Flush;
+}
+
+/**
+ * Represents an inline class name
+ * @internal
+ */
+export class InlineClassName {
+	constructor(
+		public readonly ownerId: number,
+		public readonly lineNumber: number,
+		public readonly startColumn: number,
+		public readonly endColumn: number,
+		public readonly className: string,
+		public readonly isWholeLine: boolean | undefined
+	) { }
+
+	public static fromDecorations(decorations: IModelDecoration[], buffer: Pick<ITextBuffer, 'getLineLength'>): InlineClassName[] {
+		const inlineClassNames: InlineClassName[] = [];
+
+		for (const decoration of decorations) {
+			const { options, ownerId, range } = decoration;
+
+			if (options.inlineClassName && options.inlineClassNameAffectsLetterSpacing) {
+				for (let lineNumber = range.startLineNumber; lineNumber <= range.endLineNumber; lineNumber++) {
+					inlineClassNames.push(new InlineClassName(
+						ownerId,
+						lineNumber,
+						lineNumber === range.startLineNumber ? range.startColumn : 0,
+						lineNumber === range.endLineNumber ? range.endColumn : buffer.getLineLength(lineNumber),
+						options.inlineClassName,
+						options.isWholeLine
+					));
+				}
+			}
+		}
+
+		return inlineClassNames.sort((a, b) => {
+			if (a.lineNumber === b.lineNumber) {
+				if (a.startColumn === b.startColumn) {
+					return a.endColumn - b.endColumn;
+				}
+				return a.startColumn - b.startColumn;
+			}
+			return a.lineNumber - b.lineNumber;
+		});
+	}
 }
 
 /**

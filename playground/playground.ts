@@ -81,24 +81,51 @@ const editor = monaco.editor.create(document.getElementById('editor')!, {
 	wrappingIndent: 'none',
 });
 
-const collection = editor.createDecorationsCollection();
+const boldCollection = editor.createDecorationsCollection();
+const textCollection = editor.createDecorationsCollection();
 
 editor.addAction({
 	keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyB],
 	id: 'bold',
 	label: 'Bold',
-	run(editor, ...args) {
+	run(editor) {
 		const selections = editor.getSelections();
 		if (!selections) {
 			return;
 		}
 
-		collection.set(selections.map((selection) => (
+		boldCollection.set(selections.map((selection) => (
 			{
 				range: selection,
 				options: {
 					inlineClassNameAffectsLetterSpacing: true,
 					inlineClassName: 'cuescript bold'
+				}
+			}
+		)));
+	},
+});
+
+editor.addAction({
+	keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyG],
+	id: 'after',
+	label: 'After',
+	run(editor) {
+		const selections = editor.getSelections();
+		if (!selections) {
+			return;
+		}
+
+		textCollection.set(selections.map((selection) => (
+			{
+				range: selection,
+				options: {
+					inlineClassNameAffectsLetterSpacing: true,
+					inlineClassName: 'cuescript bold',
+					after: {
+						inlineClassName: 'foo',
+						content: 'XXX'
+					},
 				}
 			}
 		)));

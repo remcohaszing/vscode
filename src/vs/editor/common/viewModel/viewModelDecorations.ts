@@ -128,9 +128,10 @@ export class ViewModelDecorations implements IDisposable {
 	 */
 	public getDecorationsLineHeightMap(): Uint8ClampedArray {
 		if (!this._decorationsHeightMapCache) {
+			const lineHeight = this._lineHeight;
 			const lineCount = this._linesCollection.getViewLineCount();
-			const lineHeights = new Uint8ClampedArray(lineCount + 1).fill(this._lineHeight);
 			const viewRange = new Range(1, this._linesCollection.getViewLineMinColumn(0), lineCount, this._linesCollection.getViewLineMaxColumn(lineCount));
+			const charHeightMatrix = Array.from({ length: lineCount + 1 }, (_, index) => new Uint8ClampedArray(index === 0 ? 0 : this._linesCollection.getViewLineMaxColumn(index) - 1));
 			const modelDecorations = this._linesCollection.getDecorationsInRange(viewRange, this.editorId, true, false, false);
 			const modelDecorationsLength = modelDecorations.length;
 
@@ -144,11 +145,33 @@ export class ViewModelDecorations implements IDisposable {
 
 				const range = this._linesCollection.convertModelRangeToViewRange(decoration.range);
 				for (let rangeLine = range.startLineNumber; rangeLine <= range.endLineNumber; rangeLine++) {
-					lineHeights[rangeLine] = Math.max(lineHeights[rangeLine], decorationLineHeight);
+					const charHeights = charHeightMatrix[rangeLine];
+					const startColumn = rangeLine === range.startLineNumber ? range.startColumn - 1 : 0;
+					const endColumn = rangeLine === range.endLineNumber ? range.endColumn - 1 : charHeights.length;
+
+					for (let column = startColumn; column < endColumn; column++) {
+						charHeights[column] = Math.max(charHeights[column], decorationLineHeight);
+					}
 				}
 			}
 
-			this._decorationsHeightMapCache = lineHeights;
+			this._decorationsHeightMapCache = Uint8ClampedArray.from(charHeightMatrix, (charHeights) => {
+				if (charHeights.length === 0) {
+					return lineHeight;
+				}
+
+				let max = 0;
+				for (let index = 0; index < charHeights.length; index++) {
+					const height = charHeights[index];
+					if (height === 0) {
+						max = Math.max(max, lineHeight);
+					} else if (height > max) {
+						max = height;
+					}
+				}
+
+				return max;
+			});
 		}
 
 		return this._decorationsHeightMapCache;

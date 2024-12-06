@@ -131,6 +131,7 @@ function createLineBreaks(targetWindow: Window, requests: string[], fontInfo: Fo
 
 	containerDomNode.style.position = 'absolute';
 	containerDomNode.style.top = '10000';
+	containerDomNode.style.whiteSpace = 'pre-wrap';
 	if (wordBreak === 'keepAll') {
 		// word-break: keep-all; overflow-wrap: anywhere
 		containerDomNode.style.wordBreak = 'keep-all';
@@ -379,10 +380,10 @@ function readLineBreaks(range: Range, lineDomNode: HTMLDivElement, lineContent: 
 			previousMiddle = middle;
 			lineOffset += chunkSize;
 		} else {
-			let middle = low + ((chunkSize / 2) | 0);
-			if (node.textContent!.charCodeAt(middle) === CharCode.Space) {
-				middle += 1;
-			}
+			const middle = low + ((chunkSize / 2) | 0);
+			// if (node.textContent!.charCodeAt(middle) === CharCode.Space) {
+			// 	middle += 1;
+			// }
 			discoverBreaks(node, low, middle);
 			discoverBreaks(node, middle, high);
 		}

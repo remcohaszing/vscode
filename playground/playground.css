@@ -26,3 +26,10 @@ h1 {
 	margin: 1rem;
 	flex: 1 1 auto;
 }
+
+.cuescript {
+	&.bold {
+		color: red;
+		font-weight: bold;
+	}
+}

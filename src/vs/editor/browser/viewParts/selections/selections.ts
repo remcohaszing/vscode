@@ -244,6 +244,7 @@ export class SelectionsOverlay extends DynamicViewOverlay {
 
 	private _getVisibleRangesWithStyle(selection: Range, ctx: RenderingContext, previousFrame: LineVisibleRangesWithStyle[] | null): LineVisibleRangesWithStyle[] {
 		const _linesVisibleRanges = ctx.linesVisibleRangesForRange(selection, true) || [];
+		// console.log(_linesVisibleRanges);
 		const linesVisibleRanges = _linesVisibleRanges.map(toStyled);
 		const visibleRangesHaveGaps = this._visibleRangesHaveGaps(linesVisibleRanges);
 
@@ -346,6 +347,7 @@ export class SelectionsOverlay extends DynamicViewOverlay {
 						className += ' ' + SelectionsOverlay.SELECTION_BOTTOM_RIGHT;
 					}
 				}
+				// console.log(className, visibleRange.left, visibleRange.width);
 				restOfSelectionOutput += this._createSelectionPiece(top, bottom, className, visibleRange.left, visibleRange.width);
 			}
 

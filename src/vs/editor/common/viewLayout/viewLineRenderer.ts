@@ -918,7 +918,7 @@ function _renderLine(input: ResolvedRenderLineInput, sb: StringBuilder): RenderL
 	let partDisplacement = 0;
 
 	if (containsRTL) {
-		sb.appendString('<span dir="ltr">');
+		sb.appendString('<span>');
 	} else {
 		sb.appendString('<span>');
 	}

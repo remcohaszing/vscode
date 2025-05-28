@@ -446,7 +446,10 @@ export class ViewLines extends ViewPart implements IViewLines {
 			const startColumn = lineNumber === range.startLineNumber ? range.startColumn : 1;
 			const continuesInNextLine = lineNumber !== originalEndLineNumber;
 			const endColumn = continuesInNextLine ? this._context.viewModel.getLineMaxColumn(lineNumber) : range.endColumn;
-			const visibleRangesForLine = this._visibleLines.getVisibleLine(lineNumber).getVisibleRangesForRange(lineNumber, startColumn, endColumn, domReadingContext);
+			const visibleLine = this._visibleLines.getVisibleLine(lineNumber);
+			// debugger;
+			// console.log(visibleLine);
+			const visibleRangesForLine = visibleLine.getVisibleRangesForRange(lineNumber, startColumn, endColumn, domReadingContext);
 
 			if (!visibleRangesForLine) {
 				continue;
@@ -461,6 +464,7 @@ export class ViewLines extends ViewPart implements IViewLines {
 				}
 			}
 
+			// console.log(visibleRangesForLine.outsideRenderedLine, lineNumber, visibleRangesForLine.ranges, continuesInNextLine);
 			visibleRanges[visibleRangesLen++] = new LineVisibleRanges(visibleRangesForLine.outsideRenderedLine, lineNumber, HorizontalRange.from(visibleRangesForLine.ranges), continuesInNextLine);
 		}
 

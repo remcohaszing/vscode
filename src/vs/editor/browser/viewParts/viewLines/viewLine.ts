@@ -172,7 +172,11 @@ export class ViewLine implements IVisibleLine {
 			return false;
 		}
 
-		sb.appendString('<div style="top:');
+		sb.appendString('<div ');
+		if (lineData.containsRTL) {
+			sb.appendString('dir="rtl" ');
+		}
+		sb.appendString('style="top:');
 		sb.appendString(String(deltaTop));
 		sb.appendString('px;height:');
 		sb.appendString(String(lineHeight));
@@ -280,7 +284,9 @@ export class ViewLine implements IVisibleLine {
 			endColumn = stopRenderingLineAfter + 1;
 		}
 
+		// console.log(lineNumber, startColumn, endColumn, context);
 		const horizontalRanges = this._renderedViewLine.getVisibleRangesForRange(lineNumber, startColumn, endColumn, context);
+		// console.log(horizontalRanges);
 		if (horizontalRanges && horizontalRanges.length > 0) {
 			return new VisibleRanges(false, horizontalRanges);
 		}
@@ -518,6 +524,7 @@ class RenderedViewLine implements IRenderedViewLine {
 				return null;
 			}
 
+			// console.log({ startOffset, endOffset });
 			return [new FloatHorizontalRange(startOffset, endOffset - startOffset)];
 		}
 

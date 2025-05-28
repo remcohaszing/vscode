@@ -96,6 +96,7 @@ export class LineHeightsManager {
 	public insertOrChangeCustomLineHeight(decorationId: string, startLineNumber: number, endLineNumber: number, lineHeight: number): void {
 		this.removeCustomLineHeight(decorationId);
 		for (let lineNumber = startLineNumber; lineNumber <= endLineNumber; lineNumber++) {
+			// console.log(lineNumber);
 			const customLine = new CustomLine(decorationId, -1, lineNumber, lineHeight, 0);
 			this._pendingSpecialLinesToInsert.push(customLine);
 		}
@@ -265,6 +266,7 @@ export class LineHeightsManager {
 		if (decorationsWithGaps.size > 0) {
 			for (const decorationId of decorationsWithGaps) {
 				const decoration = this._decorationIDToCustomLine.get(decorationId);
+				// XXX
 				if (decoration) {
 					const startLineNumber = decoration.reduce((min, l) => Math.min(min, l.lineNumber), fromLineNumber); // min
 					const endLineNumber = decoration.reduce((max, l) => Math.max(max, l.lineNumber), fromLineNumber); // max
@@ -343,6 +345,7 @@ export class LineHeightsManager {
 			newOrderedSpecialLines.push(customLine);
 			newDecorationIDToSpecialLine.add(customLine.decorationId, customLine);
 		}
+		// console.log(newOrderedSpecialLines);
 		this._orderedCustomLines = newOrderedSpecialLines;
 		this._decorationIDToCustomLine = newDecorationIDToSpecialLine;
 		this._invalidIndex = Infinity;

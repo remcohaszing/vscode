@@ -35,7 +35,33 @@ It came to the creature Gollum, who took it deep into the tunnels of the Misty M
 For the time will soon come when hobbits will shape the fortunes of all.
 `;
 
-const model = monaco.editor.createModel(content, undefined, monaco.Uri.file('example.ts'));
+const hebrew = `העולם השתנה
+
+אני מרגיש את זה במים.
+
+אני מרגיש את זה באדמה.
+
+אני מריח) את זה( באוויר.()
+
+הרבה מה שהיה פעם הלך לאיבוד, כי לא חי כיום איש שזוכר זאת.
+
+זה התחיל עם חישול הטבעות הגדולות. שלושה ניתנו לאלפים, בני אלמוות, החכמים והיפים מכל היצורים. שבעה לגמדים-אדונים, כורים ובעלי מלאכה גדולים של אולמות ההרים. ותשע, תשע טבעות הוענקו לגזע הגברים, שמעל הכל חפצים בכוח. שכן בתוך הטבעות הללו היה קשור הכוח והרצון לשלוט בכל גזע. אבל כולם הלכו שולל, כי טבעת נוספת נוצרה. עמוק בארץ מורדור, בשר(asd)יפות הר האבדון, אדון האופל סאורון חישל טבעת אמן, ולתוך הטasdבעת הזו הוא שפך את אכזריותו, זדון ורצונו לשלוט בכל החיים.
+
+טבעת אחת שתשלוט בכולם.
+
+בזו אחר זו נפלו אדמותיה החופשיות של הארץ התיכונה לכוחה של הטבעת, אך היו כאלה שהתנגדו. ברית אחרונה של אנשים ואלפים צעדה נגד צבאות מורדור, ובמדרונות הר האבדון ממש, הם נלחמו למען חירותה של הארץ התיכונה. הניצחון היה קרוב, אבל לא ניתן היה לבטל את כוחה של הטבעת. זה היה ברגע זה, כאשר כל התקווה התפוגגה, איסילדור, בן המלך, הרים את חרבו של אביו.
+
+סאורון, אויבם של העמים החופשיים של הארץ התיכונה, הובס. הטבעת עברה לאיסילדור, שהיתה לו הזדמנות אחת להשמיד את הרוע לנצח, אבל לבם של בני אדם מושחת בקלות. ולטבעת הכוח יש רצון משלה. זה בגד באיסילדור, עד מותו.
+
+וכמה דברים שלא היו צריכים להישכח אבדו. ההיסטוריה הפכה לאגדה. האגדה הפכה למיתוס. ובמשך אלפיים וחצי שנים, הטבעת חלפה מכל הידע. עד שכאשר הגיע המקרה, הוא לכד נושא אחר.
+
+זה הגיע אל היצור גולום, שלקח אותו עמוק לתוך המנהרות של הרי הערפילי. ושם זה כלה אותו. הטבעת העניקה לגולום חיים ארוכים לא טבעיים. במשך חמש מאות שנה זה הרעיל את מוחו, ובאפלולית המערה של גולום, זה חיכה. החושך התגנב בחזרה אל יערות העולם. השמועה צמחה על צל במזרח, לחישות של פחד חסר שם, וטבעת הכוח תפסה שהגיע זמנה. זה נטש את גולום, אבל אז קרה משהו שהטבעת לא התכוונה. הוא נאסף על ידי היצור הכי לא סביר שאפשר להעלות על הדעת: הוביט, בילבו באגינס, מהעיר.
+
+כי בקרוב יגיע הזמן שבו ההוביטים יעצבו את מזלם של כולם.
+`;
+
+const model = monaco.editor.createModel(hebrew, undefined, monaco.Uri.file('example.ts'));
+
 
 const editor = monaco.editor.create(document.getElementById('editor')!, {
 	automaticLayout: true,
@@ -63,7 +89,14 @@ const editor = monaco.editor.create(document.getElementById('editor')!, {
 	matchBrackets: 'never',
 	parameterHints: { enabled: false },
 	model,
-	minimap: { enabled: false },
+	minimap: {
+		enabled: false,
+		side: 'left',
+		maxColumn: 5,
+		showSlider: 'always',
+		renderCharacters: false,
+		scale: 100
+	},
 	fontFamily: 'Arial, Arimo, sans-serif, ui-sans-serif',
 	fontLigatures: false,
 	fontVariations: false,
@@ -99,6 +132,7 @@ editor.addAction({
 				range: selection,
 				options: {
 					inlineClassNameAffectsLetterSpacing: true,
+					lineHeight: 50,
 					inlineClassName: 'cuescript bold'
 				}
 			}

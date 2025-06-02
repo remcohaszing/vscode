@@ -27,9 +27,6 @@ h1 {
 	flex: 1 1 auto;
 }
 
-.cuescript {
-	&.bold {
-		color: red;
-		font-weight: bold;
-	}
+.big {
+	font-size: 32px;
 }

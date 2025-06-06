@@ -49,6 +49,7 @@ import { IUndoRedoService, ResourceEditStackSnapshot, UndoRedoGroup } from '../.
 import { TokenArray } from '../tokens/tokenArray.js';
 import { SetWithKey } from '../../../base/common/collections.js';
 import { TextModelEditReason } from '../textModelEditReason.js';
+import { TextDirection } from '../standalone/standaloneEnums.js';
 
 export function createTextBufferFactory(text: string): model.ITextBufferFactory {
 	const builder = new PieceTreeTextBufferBuilder();
@@ -2431,6 +2432,7 @@ export class ModelDecorationOptions implements model.IModelDecorationOptions {
 	readonly before: ModelDecorationInjectedTextOptions | null;
 	readonly hideInCommentTokens: boolean | null;
 	readonly hideInStringTokens: boolean | null;
+	readonly textDirection?: TextDirection | null | undefined;
 
 	private constructor(options: model.IModelDecorationOptions) {
 		this.description = options.description;
@@ -2466,6 +2468,7 @@ export class ModelDecorationOptions implements model.IModelDecorationOptions {
 		this.before = options.before ? ModelDecorationInjectedTextOptions.from(options.before) : null;
 		this.hideInCommentTokens = options.hideInCommentTokens ?? false;
 		this.hideInStringTokens = options.hideInStringTokens ?? false;
+		this.textDirection = options.textDirection ?? null;
 	}
 }
 ModelDecorationOptions.EMPTY = ModelDecorationOptions.register({ description: 'empty' });

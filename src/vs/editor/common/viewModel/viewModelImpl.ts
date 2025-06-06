@@ -41,6 +41,7 @@ import { IViewModelLines, ViewModelLinesFromModelAsIs, ViewModelLinesFromProject
 import { IThemeService } from '../../../platform/theme/common/themeService.js';
 import { GlyphMarginLanesModel } from './glyphLanesModel.js';
 import { ICustomLineHeightData } from '../viewLayout/lineHeights.js';
+import { TextDirection } from '../standalone/standaloneEnums.js';
 
 const USE_IDENTITY_LINES_COLLECTION = true;
 
@@ -776,22 +777,66 @@ export class ViewModel extends Disposable implements IViewModel {
 		return this._lines.getInjectedTextAt(viewPosition);
 	}
 
+	private _getTextDirection(lineNumber: number, decorations: ViewModelDecoration[]): TextDirection {
+		const decorationsLength = decorations.length;
+		let rtlCount = 0;
+
+		for (let i = 0; i < decorationsLength; i++) {
+			const decoration = decorations[i];
+			const range = decoration.range;
+			if (range.startLineNumber > lineNumber || range.endLineNumber < lineNumber) {
+				continue;
+			}
+			const textDirection = decoration.options.textDirection;
+			if (textDirection === TextDirection.RTL) {
+				rtlCount++;
+			} else if (textDirection === TextDirection.LTR) {
+				rtlCount--;
+			}
+		}
+
+		return rtlCount > 0 ? TextDirection.RTL : TextDirection.LTR;
+	}
+
+	public getTextDirection(lineNumber: number): TextDirection {
+		const decorations = this.getDecorationsInViewport(new Range(lineNumber, 1, lineNumber, this.getLineMaxColumn(lineNumber)));
+		return this._getTextDirection(lineNumber, decorations);
+	}
+
 	public getViewportViewLineRenderingData(visibleRange: Range, lineNumber: number): ViewLineRenderingData {
-		const allInlineDecorations = this._decorations.getDecorationsViewportData(visibleRange).inlineDecorations;
+		const decorationsViewportData = this._decorations.getDecorationsViewportData(visibleRange);
+		const allInlineDecorations = decorationsViewportData.inlineDecorations;
 		const inlineDecorations = allInlineDecorations[lineNumber - visibleRange.startLineNumber];
-		return this._getViewLineRenderingData(lineNumber, inlineDecorations);
+		return this._getViewLineRenderingData(lineNumber, inlineDecorations, decorationsViewportData.decorations);
 	}
 
 	public getViewLineRenderingData(lineNumber: number): ViewLineRenderingData {
-		const inlineDecorations = this._decorations.getInlineDecorationsOnLine(lineNumber);
-		return this._getViewLineRenderingData(lineNumber, inlineDecorations);
+		const viewportData = this._decorations.getLineViewportData(lineNumber);
+		return this._getViewLineRenderingData(lineNumber, viewportData.inlineDecorations[0], viewportData.decorations);
 	}
 
-	private _getViewLineRenderingData(lineNumber: number, inlineDecorations: InlineDecoration[]): ViewLineRenderingData {
+	private _getViewLineRenderingData(lineNumber: number, inlineDecorations: InlineDecoration[], decorations: ViewModelDecoration[]): ViewLineRenderingData {
 		const mightContainRTL = this.model.mightContainRTL();
 		const mightContainNonBasicASCII = this.model.mightContainNonBasicASCII();
 		const tabSize = this.getTabSize();
 		const lineData = this._lines.getViewLineData(lineNumber);
+		const decorationsLength = decorations.length;
+		let rtlCount = 0;
+
+		for (let i = 0; i < decorationsLength; i++) {
+			const decoration = decorations[i];
+			const range = decoration.range;
+			if (range.startLineNumber > lineNumber || range.endLineNumber < lineNumber) {
+				continue;
+			}
+			const textDirection = decoration.options.textDirection;
+			// console.log(decorations[i].range.startLineNumber, textDirection);
+			if (textDirection === TextDirection.RTL) {
+				rtlCount++;
+			} else if (textDirection === TextDirection.LTR) {
+				rtlCount--;
+			}
+		}
 
 		if (lineData.inlineDecorations) {
 			inlineDecorations = [
@@ -812,7 +857,8 @@ export class ViewModel extends Disposable implements IViewModel {
 			lineData.tokens,
 			inlineDecorations,
 			tabSize,
-			lineData.startVisibleColumn
+			lineData.startVisibleColumn,
+			this._getTextDirection(lineNumber, decorations)
 		);
 	}
 

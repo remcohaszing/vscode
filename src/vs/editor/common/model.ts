@@ -26,6 +26,7 @@ import { UndoRedoGroup } from '../../platform/undoRedo/common/undoRedo.js';
 import { TokenArray } from './tokens/tokenArray.js';
 import { IEditorModel } from './editorCommon.js';
 import { TextModelEditReason } from './textModelEditReason.js';
+import { TextDirection } from './standalone/standaloneEnums.js';
 
 /**
  * Vertical Lane in the overview ruler of the editor.
@@ -282,6 +283,11 @@ export interface IModelDecorationOptions {
 	 * @internal
 	*/
 	hideInStringTokens?: boolean | null;
+
+	/**
+	 * The text direction of the decoration.
+	 */
+	textDirection?: TextDirection | null;
 }
 
 /**

@@ -20,6 +20,7 @@ import { DomReadingContext } from './domReadingContext.js';
 import type { ViewLineOptions } from './viewLineOptions.js';
 import { ViewGpuContext } from '../../gpu/viewGpuContext.js';
 import { OffsetRange } from '../../../common/core/ranges/offsetRange.js';
+import { TextDirection } from '../../../common/standalone/standaloneEnums.js';
 
 const canUseFastRenderedViewLine = (function () {
 	if (platform.isNative) {
@@ -145,6 +146,8 @@ export class ViewLine implements IVisibleLine {
 			}
 		}
 
+		// console.log(lineData.textDirection);
+
 		const renderLineInput = new RenderLineInput(
 			options.useMonospaceOptimizations,
 			options.canUseHalfwidthRightwardsArrow,
@@ -164,7 +167,8 @@ export class ViewLine implements IVisibleLine {
 			options.renderWhitespace,
 			options.renderControlCharacters,
 			options.fontLigatures !== EditorFontLigatures.OFF,
-			selectionsOnLine
+			selectionsOnLine,
+			lineData.textDirection,
 		);
 
 		if (this._renderedViewLine && this._renderedViewLine.input.equals(renderLineInput)) {
@@ -173,8 +177,10 @@ export class ViewLine implements IVisibleLine {
 		}
 
 		sb.appendString('<div ');
-		if (lineData.containsRTL) {
+		if (lineData.textDirection === TextDirection.RTL) {
 			sb.appendString('dir="rtl" ');
+		} else if (lineData.containsRTL) {
+			sb.appendString('dir="ltr" ');
 		}
 		sb.appendString('style="top:');
 		sb.appendString(String(deltaTop));

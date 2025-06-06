@@ -12,6 +12,12 @@ dark.addEventListener('change', () => {
 
 const content = `Line 1. Line 1. Line 1. Line 1. Line 1. Line 1. Line 1. Line 1. Line 1. Line 1. Line 1. Line 1. Line 1. Line 1. Line 1. Line 1. Line 1. Line 1. Line 1. Line 1. Line 1. Line 1. Line 1. Line 1. Line 1. Line 1. Line 1. Line 1. Line 1. Line 1. Line 1. Line 1. Line 1. Line 1. Line 1. Line 1. Line 1.
 
+A A A A A A A A A A A A A A A A A A
+
+אני מרגיש את זה במים
+
+test
+
 Line 3. Line 3. Line 3. Line 3. Line 3. Line 3. Line 3. Line 3. Line 3. Line 3. Line 3. Line 3. Line 3. Line 3. Line 3. Line 3. Line 3. Line 3. Line 3. Line 3. Line 3. Line 3. Line 3. Line 3. Line 3. Line 3. Line 3. Line 3. Line 3. Line 3. Line 3. Line 3. Line 3. Line 3. Line 3. Line 3. Line 3. Line 3. Line 3. Line 3. Line 3.
 `;
 
@@ -70,7 +76,26 @@ const editor = monaco.editor.create(document.getElementById('editor')!, {
 });
 
 const boldCollection = editor.createDecorationsCollection();
-const textCollection = editor.createDecorationsCollection();
+const rtlCollection = editor.createDecorationsCollection();
+
+document.getElementById('rtl-button')!.addEventListener('click', () => {
+	const selections = editor.getSelections();
+	if (!selections) {
+		return;
+	}
+
+	rtlCollection.set(selections.map<monaco.editor.IModelDeltaDecoration>((selection) => (
+		{
+			range: selection,
+			options: {
+				inlineClassNameAffectsLetterSpacing: true,
+				textDirection: monaco.editor.TextDirection.RTL,
+				isWholeLine: true,
+				inlineClassName: 'rtl'
+			}
+		}
+	)));
+});
 
 editor.addAction({
 	keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyB],
@@ -82,12 +107,11 @@ editor.addAction({
 			return;
 		}
 
-		boldCollection.set(selections.map((selection) => (
+		boldCollection.set(selections.map<monaco.editor.IModelDeltaDecoration>((selection) => (
 			{
 				range: selection,
 				options: {
 					inlineClassNameAffectsLetterSpacing: true,
-					lineHeight: 56,
 					inlineClassName: 'big'
 				}
 			}

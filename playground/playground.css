@@ -22,11 +22,18 @@ h1 {
 	text-wrap: nowrap;
 }
 
+.controls {
+	display: flex;
+	justify-content: center;
+	padding: 1rem 1rem 0;
+}
+
 #editor {
 	margin: 1rem;
 	flex: 1 1 auto;
 }
 
-.big {
-	font-size: 32px;
+.bold {
+	font-weight: bold;
+	color: red;
 }

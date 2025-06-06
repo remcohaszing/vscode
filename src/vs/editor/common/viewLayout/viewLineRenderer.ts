@@ -12,6 +12,7 @@ import { LineDecoration, LineDecorationsNormalizer } from './lineDecorations.js'
 import { InlineDecorationType } from '../viewModel.js';
 import { LinePart, LinePartMetadata } from './linePart.js';
 import { OffsetRange } from '../core/ranges/offsetRange.js';
+import { TextDirection } from '../standalone/standaloneEnums.js';
 
 export const enum RenderWhitespace {
 	None = 0,
@@ -41,6 +42,7 @@ export class RenderLineInput {
 	public readonly renderWhitespace: RenderWhitespace;
 	public readonly renderControlCharacters: boolean;
 	public readonly fontLigatures: boolean;
+	public readonly textDirection: TextDirection | null;
 
 	/**
 	 * Defined only when renderWhitespace is 'selection'. Selections are non-overlapping,
@@ -67,7 +69,8 @@ export class RenderLineInput {
 		renderWhitespace: 'none' | 'boundary' | 'selection' | 'trailing' | 'all',
 		renderControlCharacters: boolean,
 		fontLigatures: boolean,
-		selectionsOnLine: OffsetRange[] | null
+		selectionsOnLine: OffsetRange[] | null,
+		textDirection: TextDirection | null
 	) {
 		this.useMonospaceOptimizations = useMonospaceOptimizations;
 		this.canUseHalfwidthRightwardsArrow = canUseHalfwidthRightwardsArrow;
@@ -96,6 +99,7 @@ export class RenderLineInput {
 		this.renderControlCharacters = renderControlCharacters;
 		this.fontLigatures = fontLigatures;
 		this.selectionsOnLine = selectionsOnLine && selectionsOnLine.sort((a, b) => a.start < b.start ? -1 : 1);
+		this.textDirection = textDirection;
 
 		const wsmiddotDiff = Math.abs(wsmiddotWidth - spaceWidth);
 		const middotDiff = Math.abs(middotWidth - spaceWidth);

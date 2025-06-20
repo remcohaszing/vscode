@@ -624,13 +624,6 @@ class RenderedViewLine implements IRenderedViewLine {
 	}
 
 	private _readRawVisibleRangesForRange(domNode: FastDomNode<HTMLElement>, startColumn: number, endColumn: number, context: DomReadingContext): FloatHorizontalRange[] | null {
-
-		if (startColumn === 1 && endColumn === this._characterMapping.length) {
-			// This branch helps IE with bidi text & gives a performance boost to other browsers when reading visible ranges for an entire line
-
-			return [new FloatHorizontalRange(0, this.getWidth(context))];
-		}
-
 		const startDomPosition = this._characterMapping.getDomPosition(startColumn);
 		const endDomPosition = this._characterMapping.getDomPosition(endColumn);
 

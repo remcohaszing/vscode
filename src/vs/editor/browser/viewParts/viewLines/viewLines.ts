@@ -26,6 +26,7 @@ import { Viewport } from '../../../common/viewModel.js';
 import { ViewContext } from '../../../common/viewModel/viewContext.js';
 import { ViewLineOptions } from './viewLineOptions.js';
 import type { ViewGpuContext } from '../../gpu/viewGpuContext.js';
+import { TextDirection } from '../../../common/standalone/standaloneEnums.js';
 
 class LastRenderedData {
 
@@ -460,7 +461,11 @@ export class ViewLines extends ViewPart implements IViewLines {
 				nextLineModelLineNumber = this._context.viewModel.coordinatesConverter.convertViewPositionToModelPosition(new Position(lineNumber + 1, 1)).lineNumber;
 
 				if (currentLineModelLineNumber !== nextLineModelLineNumber) {
-					visibleRangesForLine.ranges[visibleRangesForLine.ranges.length - 1].width += this._typicalHalfwidthCharacterWidth;
+					const floatHorizontalRange = visibleRangesForLine.ranges[visibleRangesForLine.ranges.length - 1];
+					floatHorizontalRange.width += this._typicalHalfwidthCharacterWidth;
+					if (this._context.viewModel.getTextDirection(currentLineModelLineNumber) === TextDirection.RTL) {
+						floatHorizontalRange.left -= this._typicalHalfwidthCharacterWidth;
+					}
 				}
 			}
 

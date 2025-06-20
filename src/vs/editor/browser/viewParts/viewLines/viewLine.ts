@@ -518,21 +518,6 @@ class RenderedViewLine implements IRenderedViewLine {
 		if (!this.domNode) {
 			return null;
 		}
-		if (this._pixelOffsetCache !== null) {
-			// the text is LTR
-			const startOffset = this._readPixelOffset(this.domNode, lineNumber, startColumn, context);
-			if (startOffset === -1) {
-				return null;
-			}
-
-			const endOffset = this._readPixelOffset(this.domNode, lineNumber, endColumn, context);
-			if (endOffset === -1) {
-				return null;
-			}
-
-			// console.log({ startOffset, endOffset });
-			return [new FloatHorizontalRange(startOffset, endOffset - startOffset)];
-		}
 
 		return this._readVisibleRangesForRange(this.domNode, lineNumber, startColumn, endColumn, context);
 	}
@@ -603,7 +588,9 @@ class RenderedViewLine implements IRenderedViewLine {
 
 		if (column === this._characterMapping.length && this._isWhitespaceOnly && this._containsForeignElements === ForeignElementType.None) {
 			// This branch helps in the case of whitespace only lines which have a width set
-			return this.getWidth(context);
+			return this.input.textDirection === TextDirection.RTL
+				? this.domNode!.domNode.clientWidth - this.getWidth(context)
+				: this.getWidth(context);
 		}
 
 		const domPosition = this._characterMapping.getDomPosition(column);

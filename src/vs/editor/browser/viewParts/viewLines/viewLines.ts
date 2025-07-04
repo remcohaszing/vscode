@@ -448,8 +448,6 @@ export class ViewLines extends ViewPart implements IViewLines {
 			const continuesInNextLine = lineNumber !== originalEndLineNumber;
 			const endColumn = continuesInNextLine ? this._context.viewModel.getLineMaxColumn(lineNumber) : range.endColumn;
 			const visibleLine = this._visibleLines.getVisibleLine(lineNumber);
-			// debugger;
-			// console.log(visibleLine);
 			const visibleRangesForLine = visibleLine.getVisibleRangesForRange(lineNumber, startColumn, endColumn, domReadingContext);
 
 			if (!visibleRangesForLine) {

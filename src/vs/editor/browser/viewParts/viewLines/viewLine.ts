@@ -169,6 +169,7 @@ export class ViewLine implements IVisibleLine {
 			options.fontLigatures !== EditorFontLigatures.OFF,
 			selectionsOnLine,
 			lineData.textDirection,
+			options.verticalScrollbarSize
 		);
 
 		if (this._renderedViewLine && this._renderedViewLine.input.equals(renderLineInput)) {
@@ -188,6 +189,10 @@ export class ViewLine implements IVisibleLine {
 		sb.appendString(String(lineHeight));
 		sb.appendString('px;line-height:');
 		sb.appendString(String(lineHeight));
+		if (lineData.textDirection === TextDirection.RTL) {
+			sb.appendString('px;padding-right:');
+			sb.appendString(String(options.verticalScrollbarSize));
+		}
 		sb.appendString('px;" class="');
 		sb.appendString(ViewLine.CLASS_NAME);
 		sb.appendString('">');
@@ -589,7 +594,7 @@ class RenderedViewLine implements IRenderedViewLine {
 		if (column === this._characterMapping.length && this._isWhitespaceOnly && this._containsForeignElements === ForeignElementType.None) {
 			// This branch helps in the case of whitespace only lines which have a width set
 			return this.input.textDirection === TextDirection.RTL
-				? this.domNode!.domNode.clientWidth - this.getWidth(context)
+				? this.domNode!.domNode.clientWidth - this.getWidth(context) - this.input.verticalScrollbarSize // XXX
 				: this.getWidth(context);
 		}
 

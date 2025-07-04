@@ -759,7 +759,7 @@ export class MouseTargetFactory {
 
 			const isRtl = ctx.isRtl(lineNumber);
 			if (isRtl) {
-				if (request.mouseContentHorizontalOffset + lineWidth <= ctx.layoutInfo.contentWidth) {
+				if (request.mouseContentHorizontalOffset + lineWidth <= ctx.layoutInfo.contentWidth - ctx.layoutInfo.verticalScrollbarWidth) {
 					const detail = createEmptyContentDataInLines(request.mouseContentHorizontalOffset - lineWidth);
 					const pos = new Position(lineNumber, ctx.viewModel.getLineMaxColumn(lineNumber));
 					return request.fulfillContentEmpty(pos, detail);
@@ -781,7 +781,7 @@ export class MouseTargetFactory {
 				const lineWidth = ctx.getLineWidth(lineNumber);
 				const isRtl = ctx.isRtl(lineNumber);
 				if (isRtl) {
-					if (request.mouseContentHorizontalOffset + lineWidth <= ctx.layoutInfo.contentWidth) {
+					if (request.mouseContentHorizontalOffset + lineWidth <= ctx.layoutInfo.contentWidth - ctx.layoutInfo.verticalScrollbarWidth) {
 						const detail = createEmptyContentDataInLines(request.mouseContentHorizontalOffset - lineWidth);
 						const pos = new Position(lineNumber, ctx.viewModel.getLineMaxColumn(lineNumber));
 						return request.fulfillContentEmpty(pos, detail);

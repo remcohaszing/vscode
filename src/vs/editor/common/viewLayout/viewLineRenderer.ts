@@ -43,6 +43,7 @@ export class RenderLineInput {
 	public readonly renderControlCharacters: boolean;
 	public readonly fontLigatures: boolean;
 	public readonly textDirection: TextDirection | null;
+	public readonly verticalScrollbarSize: number;
 
 	/**
 	 * Defined only when renderWhitespace is 'selection'. Selections are non-overlapping,
@@ -70,7 +71,8 @@ export class RenderLineInput {
 		renderControlCharacters: boolean,
 		fontLigatures: boolean,
 		selectionsOnLine: OffsetRange[] | null,
-		textDirection: TextDirection | null
+		textDirection: TextDirection | null,
+		verticalScrollbarSize: number
 	) {
 		this.useMonospaceOptimizations = useMonospaceOptimizations;
 		this.canUseHalfwidthRightwardsArrow = canUseHalfwidthRightwardsArrow;
@@ -100,6 +102,7 @@ export class RenderLineInput {
 		this.fontLigatures = fontLigatures;
 		this.selectionsOnLine = selectionsOnLine && selectionsOnLine.sort((a, b) => a.start < b.start ? -1 : 1);
 		this.textDirection = textDirection;
+		this.verticalScrollbarSize = verticalScrollbarSize;
 
 		const wsmiddotDiff = Math.abs(wsmiddotWidth - spaceWidth);
 		const middotDiff = Math.abs(middotWidth - spaceWidth);

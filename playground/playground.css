@@ -22,6 +22,12 @@ h1 {
 	text-wrap: nowrap;
 }
 
+.controls {
+	display: flex;
+	margin: 1rem;
+	justify-content: center;
+}
+
 #editor {
 	margin: 1rem;
 	flex: 1 1 auto;

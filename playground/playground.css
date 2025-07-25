@@ -26,3 +26,39 @@ h1 {
 	margin: 1rem;
 	flex: 1 1 auto;
 }
+
+.cuescript-header-1 {
+	font-size: 48px;
+	font-weight: bold;
+	color: #00a7da !important;
+}
+
+.cuescript-header-2 {
+	font-size: 42px;
+	font-weight: bold;
+	color: #00a7da !important;
+}
+
+.cuescript-header-3 {
+	font-size: 36px;
+	font-weight: bold;
+	color: #00a7da !important;
+}
+
+.cuescript-header-4 {
+	font-size: 30px;
+	font-weight: bold;
+	color: #00a7da !important;
+}
+
+.cuescript-header-5 {
+	font-size: 24px;
+	font-weight: bold;
+	color: #00a7da !important;
+}
+
+.cuescript-header-6 {
+	font-size: 18px;
+	font-weight: bold;
+	color: #00a7da !important;
+}

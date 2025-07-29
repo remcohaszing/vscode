@@ -10,29 +10,9 @@ dark.addEventListener('change', () => {
 	monaco.editor.setTheme(dark.matches ? 'vs-dark' : 'vs-light');
 });
 
-const content = `# This is the title of a markdown document
+const content = `This text is relatively long line. It’s a broken line that has a big word in it. That word is somewhere around the middle part of this line.
 
-This is the content of a markdown document.
-
-## This is a level 2 header
-
-This is some more content.
-
-### This is a level 3 header
-
-This is some more content.
-
-#### This is a level 4 header
-
-This is some more content.
-
-##### This is a level 5 header
-
-This is some more content.
-
-###### This is a level 6 header
-
-This is some more content. This is some more content. This is some more content. This is some more content. This is some more content. This is some more content. This is some more content. This is some more content. This is some more content. This is some more content. This is some more content. This is some more content. This is some more content. This is some more content. This is some more content. This is some more content. This is some more content.
+This whole line is big, because it has the word “whole” in it. The decoration is only applied to the word “whole”, but it specifies the option “isWholeLine: true”.
 `;
 
 const model = monaco.editor.createModel(content, undefined, monaco.Uri.file('example.ts'));
@@ -57,19 +37,35 @@ function updateDecorations() {
 	const lines = model.getValue().split('\n');
 	for (let index = 0; index < lines.length; index++) {
 		const line = lines[index];
-		const match = line.match(/^#{1,6} /);
-		if (match) {
+		for (const match of line.matchAll(/big/gi)) {
 			newDecorations.push({
 				range: {
 					startLineNumber: index + 1,
-					startColumn: 1,
+					startColumn: match.index! + 1,
 					endLineNumber: index + 1,
-					endColumn: line.length + 1
+					endColumn: match.index! + match[0].length + 1
 				},
 				options: {
-					inlineClassName: `cuescript-header-${match[0].length - 1}`,
+					inlineClassName: `cuescript-header-4`,
 					inlineClassNameAffectsLetterSpacing: true,
-					lineHeight: 19 + 10 * (8 - match[0].length)
+					lineHeight: 40
+				}
+			});
+		}
+
+		for (const match of line.matchAll(/whole/gi)) {
+			newDecorations.push({
+				range: {
+					startLineNumber: index + 1,
+					startColumn: match.index! + 1,
+					endLineNumber: index + 1,
+					endColumn: match.index! + match[0].length + 1
+				},
+				options: {
+					inlineClassName: `cuescript-header-4`,
+					inlineClassNameAffectsLetterSpacing: true,
+					isWholeLine: true,
+					lineHeight: 40
 				}
 			});
 		}

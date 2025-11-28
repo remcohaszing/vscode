@@ -132,7 +132,7 @@ export class ViewModelLinesFromProjectedModel implements IViewModelLines {
 		const lineCount = linesContent.length;
 		const lineBreaksComputer = this.createLineBreaksComputer();
 
-		const { inlineClassNames, lineInjectedTexts } = lineMetaFromDecorations(injectedTextDecorations);
+		const { inlineClassNames, lineInjectedTexts } = lineMetaFromDecorations(injectedTextDecorations, this.model);
 		const injectedTextQueue = new arrays.ArrayQueue(lineInjectedTexts);
 		const inlineClassNameQueue = new arrays.ArrayQueue(inlineClassNames);
 		for (let i = 0; i < lineCount; i++) {

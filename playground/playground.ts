@@ -200,7 +200,7 @@ function getLineBreakData() {
 		const lineNumber = index + 1;
 		const line = lines[index];
 		const decorations = model.getLineDecorations(lineNumber);
-		const { inlineClassNames, lineInjectedTexts } = lineMetaFromDecorations(decorations as IModelDecoration[]);
+		const { inlineClassNames, lineInjectedTexts } = lineMetaFromDecorations(decorations as IModelDecoration[], model);
 		// The order in which addRequest is called determines the order of the finalize() output.
 		// Because we add all lines sequentially in this example, the line index matches the
 		// modelLineProjectionData index below.

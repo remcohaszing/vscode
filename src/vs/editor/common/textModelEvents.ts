@@ -6,7 +6,7 @@
 import { IPosition } from './core/position.js';
 import { IRange, Range } from './core/range.js';
 import { Selection } from './core/selection.js';
-import { IModelDecoration, InjectedTextOptions } from './model.js';
+import { IModelDecoration, InjectedTextOptions, ITextBuffer } from './model.js';
 import { TextModelEditSource } from './textModelEditSource.js';
 
 /**
@@ -262,7 +262,7 @@ export class LineInjectedText {
 	}
 }
 
-export function lineMetaFromDecorations(decorations: IModelDecoration[]) {
+export function lineMetaFromDecorations(decorations: IModelDecoration[], buffer: Pick<ITextBuffer, 'getLineLength'>) {
 	const length = decorations.length;
 	const inlineClassNames: InlineClassName[] = [];
 	const lineInjectedTexts: LineInjectedText[] = [];
@@ -296,7 +296,7 @@ export function lineMetaFromDecorations(decorations: IModelDecoration[]) {
 					ownerId,
 					lineNumber,
 					lineNumber === range.startLineNumber ? range.startColumn : 0,
-					lineNumber === range.endLineNumber ? range.endColumn : Infinity,
+					lineNumber === range.endLineNumber ? range.endColumn : buffer.getLineLength(lineNumber),
 					options.inlineClassName,
 					options.isWholeLine
 				));

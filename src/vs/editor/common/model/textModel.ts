@@ -1503,7 +1503,7 @@ export class TextModel extends Disposable implements model.ITextModel, IDecorati
 					0
 				);
 
-				const { inlineClassNames, lineInjectedTexts: injectedTextInEditedRange } = lineMetaFromDecorations(decorationsWithInjectedTextInEditedRange);
+				const { inlineClassNames, lineInjectedTexts: injectedTextInEditedRange } = lineMetaFromDecorations(decorationsWithInjectedTextInEditedRange, this._buffer);
 				const injectedTextInEditedRangeQueue = new ArrayQueue(injectedTextInEditedRange);
 				const inlineClassNamesInEditedRangeQueue = new ArrayQueue(inlineClassNames);
 
@@ -1819,7 +1819,7 @@ export class TextModel extends Disposable implements model.ITextModel, IDecorati
 		const endOffset = startOffset + this._buffer.getLineLength(lineNumber);
 
 		const result = this._decorationsTree.searchTextDecorations(this, startOffset, endOffset, 0);
-		return lineMetaFromDecorations(result);
+		return lineMetaFromDecorations(result, this._buffer);
 	}
 
 	public getFontDecorationsInRange(range: IRange, ownerId: number = 0): model.IModelDecoration[] {

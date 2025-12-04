@@ -251,8 +251,10 @@ export abstract class AbstractScrollbar extends Widget {
 			e.pointerId,
 			e.buttons,
 			(pointerMoveData: PointerEvent) => {
+				const target: Element = (pointerMoveData.target as Element) || (e.target as Element);
+				const scale = target.getBoundingClientRect().height / target.clientHeight;
 				const pointerOrthogonalPosition = this._sliderOrthogonalPointerPosition(pointerMoveData);
-				const pointerOrthogonalDelta = Math.abs(pointerOrthogonalPosition - initialPointerOrthogonalPosition);
+				const pointerOrthogonalDelta = Math.abs((pointerOrthogonalPosition - initialPointerOrthogonalPosition) / scale);
 
 				if (platform.isWindows && pointerOrthogonalDelta > POINTER_DRAG_RESET_DISTANCE) {
 					// The pointer has wondered away from the scrollbar => reset dragging
@@ -261,7 +263,7 @@ export abstract class AbstractScrollbar extends Widget {
 				}
 
 				const pointerPosition = this._sliderPointerPosition(pointerMoveData);
-				const pointerDelta = pointerPosition - initialPointerPosition;
+				const pointerDelta = (pointerPosition - initialPointerPosition) / scale;
 				this._setDesiredScrollPositionNow(initialScrollbarState.getDesiredScrollPositionFromDelta(pointerDelta));
 			},
 			() => {

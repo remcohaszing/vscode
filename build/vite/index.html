@@ -1,6 +1,6 @@
 <!-- Copyright (C) Microsoft Corporation. All rights reserved. -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
 	<head>
 		<meta charset="utf-8">
 		<meta name="color-scheme" content="light dark">
@@ -8,8 +8,25 @@
 		<title>Monaco Playground</title>
 	</head>
 	<body>
-		<div id="sampleContent"></div>
-		<p>Use the Playground Launch Config for a better dev experience</p>
+		<main>
+			<h1>Monaco Playground</h1>
+			<form class="buttons">
+				<label>
+					<input type="checkbox" id="big-inline">
+					Big inline
+				</label>
+				<label>
+					<input type="checkbox" id="big-whole-line">
+					Big whole line
+				</label>
+				<label>
+					<input type="checkbox" id="rtl">
+					RTL
+				</label>
+			</form>
+			<div id="editor"></div>
+		</main>
 		<script src="./index.ts" type="module"></script>
+		<script src="./playground.ts" type="module"></script>
 	</body>
 </html>

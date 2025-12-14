@@ -3,7 +3,58 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-#sampleContent {
-	height: 400px;
-	border: 1px solid black;
+html,
+body {
+	font-family: system-ui;
+	margin: 0;
+	height: 100%;
+}
+
+main {
+	display: flex;
+	flex-flow: column;
+	height: 100%;
+}
+
+h1 {
+	background: #00a7da;
+	color: #111111;
+	flex: 0 1 auto;
+	margin: 0;
+	overflow: hidden;
+	padding: 0.5rem 1rem;
+	text-overflow: ellipsis;
+	text-wrap: nowrap;
+}
+
+.buttons {
+	align-items: center;
+	display: flex;
+	gap: 0.5rem;
+	justify-content: center;
+	margin: 0.5rem 1rem 0;
+
+	& label {
+		box-sizing: border-box;
+		flex: 1 0 33%;
+		border: 1px solid #666666;
+		padding: 0.5rem;
+	}
+}
+
+#editor {
+	margin: 1rem;
+	flex: 1 1 auto;
+}
+
+.big-whole-line {
+	font-size: 24px;
+	font-weight: bold;
+	color: #009425 !important;
+}
+
+.big-inline {
+	font-size: 34px;
+	font-weight: bold;
+	color: #00a7da !important;
 }

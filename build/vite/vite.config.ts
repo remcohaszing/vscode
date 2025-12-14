@@ -8,6 +8,7 @@ import path, { join } from 'path';
 import { rollupEsmUrlPlugin } from '@vscode/rollup-plugin-esm-url';
 import { statSync } from 'fs';
 import { pathToFileURL } from 'url';
+import devtoolsJson from 'vite-plugin-devtools-json';
 
 function injectBuiltinExtensionsPlugin(): Plugin {
 	let builtinExtensionsCache: unknown[] | null = null;
@@ -164,6 +165,7 @@ logger.warn = (msg, options) => {
 
 export default defineConfig({
 	plugins: [
+		devtoolsJson(),
 		rollupEsmUrlPlugin({}),
 		injectBuiltinExtensionsPlugin(),
 		createHotClassSupport()

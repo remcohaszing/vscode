@@ -58,10 +58,16 @@ For the time will soon come when hobbits will shape the fortunes of all.
 
 const model = monaco.editor.createModel(content, undefined, monaco.Uri.file('example.ts'));
 
+const verticalScrollbarSize = 16;
+const horizontalScrollbarSize = 12;
 const editor = monaco.editor.create(document.getElementById('editor')!, {
 	automaticLayout: true,
 	fontFamily: 'arial',
 	minimap: { enabled: false },
+	scrollbar: {
+		horizontalScrollbarSize,
+		verticalScrollbarSize
+	},
 	wordWrap: 'on',
 	wrappingStrategy: 'advanced',
 	model,
@@ -145,4 +151,23 @@ registerDecoratorButton('big-whole-line', {
 registerDecoratorButton('rtl', {
 	isWholeLine: true,
 	textDirection: monaco.editor.TextDirection.RTL
+});
+
+const scale = document.getElementById('scale') as HTMLInputElement;
+scale.addEventListener('change', event => {
+	const value = scale.valueAsNumber;
+	monaco.editor.EditorZoom.setZoomLevel(value);
+});
+
+monaco.editor.EditorZoom.onDidChangeZoomLevel((zoomLevel) => {
+	// https://github.com/microsoft/vscode/blob/main/src/vs/editor/common/config/fontInfo.ts#L48
+	const factor = 1 + zoomLevel * 0.1;
+	editor.updateOptions({
+		scrollbar: {
+			horizontalScrollbarSize: horizontalScrollbarSize * factor,
+			verticalScrollbarSize: verticalScrollbarSize * factor
+		}
+	});
+
+	editor.getContainerDomNode().style.width = `${256 * factor}px`;
 });

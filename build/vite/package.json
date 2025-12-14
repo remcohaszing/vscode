@@ -13,6 +13,7 @@
     "@vscode/component-explorer-vite-plugin": "^0.2.1-7",
     "@vscode/rollup-plugin-esm-url": "^1.0.1-1",
     "rollup": "*",
-    "vite": "npm:rolldown-vite@latest"
+    "vite": "npm:rolldown-vite@latest",
+    "vite-plugin-devtools-json": "^1.0.0"
   }
 }

@@ -18,13 +18,3 @@ monaco.editor.setTheme(dark.matches ? 'vs-dark' : 'vs-light');
 dark.addEventListener('change', () => {
 	monaco.editor.setTheme(dark.matches ? 'vs-dark' : 'vs-light');
 });
-
-const root = document.getElementById('sampleContent');
-if (root) {
-	const d = monaco.editor.createDiffEditor(root);
-
-	d.setModel({
-		modified: monaco.editor.createModel(`hello world`),
-		original: monaco.editor.createModel(`hello monaco`),
-	});
-}

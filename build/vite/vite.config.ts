@@ -10,6 +10,24 @@ import { statSync } from 'fs';
 import { pathToFileURL } from 'url';
 import devtoolsJson from 'vite-plugin-devtools-json';
 
+function devserverRedirect(): Plugin {
+	return {
+		name: 'devserver-redirect',
+		configureServer(server) {
+			server.middlewares.use('/', (req, res, next) => {
+				if (req.url !== '/') {
+					return next();
+				}
+
+				res.writeHead(302, {
+					location: '/build/vite/'
+				});
+				res.end();
+			});
+		}
+	};
+}
+
 function injectBuiltinExtensionsPlugin(): Plugin {
 	let builtinExtensionsCache: unknown[] | null = null;
 
@@ -165,6 +183,7 @@ logger.warn = (msg, options) => {
 
 export default defineConfig({
 	plugins: [
+		devserverRedirect(),
 		devtoolsJson(),
 		rollupEsmUrlPlugin({}),
 		injectBuiltinExtensionsPlugin(),

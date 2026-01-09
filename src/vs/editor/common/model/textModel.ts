@@ -2399,8 +2399,9 @@ export class TextModel
 					new ModelLineHeightChanged(
 						specialLineHeightChange.ownerId,
 						specialLineHeightChange.decorationId,
-						specialLineHeightChange.lineNumber,
+						specialLineHeightChange.range,
 						specialLineHeightChange.lineHeight,
+						specialLineHeightChange.isWholeLine,
 					),
 			);
 			this._onDidChangeLineHeight.fire(
@@ -2900,8 +2901,9 @@ export class TextModel
 			this._onDidChangeDecorations.recordLineAffectedByLineHeightChange(
 				ownerId,
 				decorationId,
-				oldRange!.startLineNumber,
+				oldRange!,
 				null,
+				node.options.isWholeLine,
 			);
 		}
 		if (node.options.affectsFont) {
@@ -2942,8 +2944,9 @@ export class TextModel
 			this._onDidChangeDecorations.recordLineAffectedByLineHeightChange(
 				ownerId,
 				decorationId,
-				range.startLineNumber,
+				range,
 				node.options.lineHeight,
+				node.options.isWholeLine,
 			);
 		}
 		if (node.options.affectsFont) {
@@ -2992,8 +2995,9 @@ export class TextModel
 			this._onDidChangeDecorations.recordLineAffectedByLineHeightChange(
 				ownerId,
 				decorationId,
-				nodeRange.startLineNumber,
+				nodeRange,
 				options.lineHeight,
+				options.isWholeLine,
 			);
 		}
 		if (node.options.affectsFont || options.affectsFont) {
@@ -3068,8 +3072,9 @@ export class TextModel
 							this._onDidChangeDecorations.recordLineAffectedByLineHeightChange(
 								ownerId,
 								decorationId,
-								nodeRange.startLineNumber,
+								nodeRange,
 								null,
+								node.options.isWholeLine,
 							);
 						}
 						if (node.options.affectsFont) {
@@ -3142,8 +3147,9 @@ export class TextModel
 						this._onDidChangeDecorations.recordLineAffectedByLineHeightChange(
 							ownerId,
 							node.id,
-							range.startLineNumber,
+							range,
 							node.options.lineHeight,
+							node.options.isWholeLine,
 						);
 					}
 					if (node.options.affectsFont) {
@@ -4059,8 +4065,9 @@ class DidChangeDecorationsEmitter extends Disposable {
 	public recordLineAffectedByLineHeightChange(
 		ownerId: number,
 		decorationId: string,
-		lineNumber: number,
+		range: Range,
 		lineHeight: number | null,
+		isWholeLine: boolean,
 	): void {
 		if (!this._affectedLineHeights) {
 			this._affectedLineHeights = new SetWithKey<LineHeightChangingDecoration>(
@@ -4072,8 +4079,9 @@ class DidChangeDecorationsEmitter extends Disposable {
 			new LineHeightChangingDecoration(
 				ownerId,
 				decorationId,
-				lineNumber,
+				range,
 				lineHeight,
+				isWholeLine,
 			),
 		);
 	}

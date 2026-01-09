@@ -204,8 +204,12 @@ export class ViewModel extends Disposable implements IViewModel {
 		const defaultLineHeight = this._configuration.options.get(EditorOption.lineHeight);
 		const decorations = this.model.getCustomLineHeightsDecorations(this._editorId);
 		return decorations.map((d) => {
-			const lineNumber = d.range.startLineNumber;
-			const viewRange = this.coordinatesConverter.convertModelRangeToViewRange(new Range(lineNumber, 1, lineNumber, this.model.getLineMaxColumn(lineNumber)));
+			const range = d.range;
+			const viewRange = this.coordinatesConverter.convertModelRangeToViewRange(
+				d.options.isWholeLine
+					? new Range(range.startLineNumber, 1, range.endLineNumber, this.model.getLineMaxColumn(range.endLineNumber))
+					: range,
+			);
 			return {
 				decorationId: d.id,
 				startLineNumber: viewRange.startLineNumber,
@@ -364,6 +368,7 @@ export class ViewModel extends Disposable implements IViewModel {
 			}
 			const lineBreaks = lineBreaksComputer.finalize();
 			const lineBreakQueue = new ArrayQueue(lineBreaks);
+			let shouldFlushViewLayout = false;
 
 			for (const change of changes) {
 				switch (change.changeType) {
@@ -371,7 +376,7 @@ export class ViewModel extends Disposable implements IViewModel {
 						this._lines.onModelFlushed();
 						eventsCollector.emitViewEvent(new viewEvents.ViewFlushedEvent());
 						this._decorations.reset();
-						this.viewLayout.onFlushed(this.getLineCount(), this._getCustomLineHeights());
+						shouldFlushViewLayout = true;
 						hadOtherModelChange = true;
 						break;
 					}
@@ -382,6 +387,7 @@ export class ViewModel extends Disposable implements IViewModel {
 							this.viewLayout.onLinesDeleted(linesDeletedEvent.fromLineNumber, linesDeletedEvent.toLineNumber);
 						}
 						hadOtherModelChange = true;
+						shouldFlushViewLayout = true;
 						break;
 					}
 					case textModelEvents.RawContentChangedType.LinesInserted: {
@@ -392,6 +398,7 @@ export class ViewModel extends Disposable implements IViewModel {
 							this.viewLayout.onLinesInserted(linesInsertedEvent.fromLineNumber, linesInsertedEvent.toLineNumber);
 						}
 						hadOtherModelChange = true;
+						shouldFlushViewLayout = true;
 						break;
 					}
 					case textModelEvents.RawContentChangedType.LineChanged: {
@@ -410,6 +417,7 @@ export class ViewModel extends Disposable implements IViewModel {
 							eventsCollector.emitViewEvent(linesDeletedEvent);
 							this.viewLayout.onLinesDeleted(linesDeletedEvent.fromLineNumber, linesDeletedEvent.toLineNumber);
 						}
+						shouldFlushViewLayout = true;
 						break;
 					}
 					case textModelEvents.RawContentChangedType.EOLChanged: {
@@ -417,6 +425,10 @@ export class ViewModel extends Disposable implements IViewModel {
 						break;
 					}
 				}
+			}
+
+			if (shouldFlushViewLayout) {
+				this.viewLayout.onFlushed(this.getLineCount(), this._getCustomLineHeights());
 			}
 
 			if (versionId !== null) {
@@ -474,8 +486,12 @@ export class ViewModel extends Disposable implements IViewModel {
 
 				this.viewLayout.changeSpecialLineHeights((accessor: ILineHeightChangeAccessor) => {
 					for (const change of filteredChanges) {
-						const { decorationId, lineNumber, lineHeightMultiplier } = change;
-						const viewRange = this.coordinatesConverter.convertModelRangeToViewRange(new Range(lineNumber, 1, lineNumber, this.model.getLineMaxColumn(lineNumber)));
+						const { decorationId, isWholeLine, lineHeightMultiplier, range } = change;
+						const viewRange = this.coordinatesConverter.convertModelRangeToViewRange(
+							isWholeLine
+								? new Range(range.startLineNumber, 1, range.endLineNumber, this.model.getLineMaxColumn(range.endLineNumber))
+								: range
+						);
 						if (lineHeightMultiplier !== null) {
 							accessor.insertOrChangeCustomLineHeight(decorationId, viewRange.startLineNumber, viewRange.endLineNumber, lineHeightMultiplier * this._configuration.options.get(EditorOption.lineHeight));
 						} else {

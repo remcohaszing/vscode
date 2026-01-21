@@ -48,14 +48,18 @@ h1 {
 	width: 256px;
 }
 
-.big-whole-line {
-	font-size: 1.5em;
-	font-weight: bold;
-	color: #009425 !important;
+.whole-line-bg {
+	background-color: rgba(255, 0, 0, 0.3) !important;
 }
 
-.big-inline {
-	font-size: 2em;
-	font-weight: bold;
-	color: #00a7da !important;
+.inline-inverse {
+	background-color: rgba(255, 255, 255) !important;
+	color: rgba(0, 0, 0) !important;
+}
+
+/* Our current cloaking implementation */
+.monaco-editor .view-line:has(.cloaked) {
+	background-color: rgba(255, 0, 0, 0.3) !important;
+	width: 11rem;
+	z-index: 1;
 }

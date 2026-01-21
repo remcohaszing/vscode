@@ -123,7 +123,7 @@ function registerDecoratorButton(id: string, options: monaco.editor.IModelDecora
 			}
 		}
 
-		for (const id of model.deltaDecorations(oldDecorationIds, newDecorations)) {
+		for (const id of model.deltaDecorations([], newDecorations)) {
 			knownDecorationIds.add(id);
 		}
 	});
@@ -135,22 +135,19 @@ function registerDecoratorButton(id: string, options: monaco.editor.IModelDecora
 	});
 }
 
-registerDecoratorButton('big-inline', {
-	inlineClassName: `big-inline`,
-	inlineClassNameAffectsLetterSpacing: true,
-	lineHeight: 2
+registerDecoratorButton('whole-line-bg', {
+	inlineClassName: `whole-line-bg`,
+	isWholeLine: true,
+	lineHeight: 1
 });
 
-registerDecoratorButton('big-whole-line', {
-	inlineClassName: `big-whole-line`,
-	inlineClassNameAffectsLetterSpacing: true,
-	isWholeLine: true,
-	lineHeight: 1.5
+registerDecoratorButton('inline-inverse', {
+	inlineClassName: `inline-inverse`,
+	lineHeight: 1
 });
 
-registerDecoratorButton('rtl', {
-	isWholeLine: true,
-	textDirection: monaco.editor.TextDirection.RTL
+registerDecoratorButton('cloak', {
+	inlineClassName: `cloaked`,
 });
 
 const scale = document.getElementById('scale') as HTMLInputElement;

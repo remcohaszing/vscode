@@ -136,7 +136,9 @@ function registerDecoratorButton(id: string, options: monaco.editor.IModelDecora
 }
 
 registerDecoratorButton('whole-line-bg', {
-	inlineClassName: `whole-line-bg`,
+	inlineClassName: 'red',
+	className: 'green',
+	blockClassName: 'blue',
 	isWholeLine: true,
 	lineHeight: 1
 });

@@ -52,6 +52,18 @@ h1 {
 	background-color: rgba(255, 0, 0, 0.3) !important;
 }
 
+.red {
+	background: rgb(150, 0, 0);
+}
+
+.green {
+	background: rgb(0, 150, 0);
+}
+
+.blue {
+	background: rgba(0, 0, 150, 0.5);
+}
+
 .inline-inverse {
 	background-color: rgba(255, 255, 255) !important;
 	color: rgba(0, 0, 0) !important;

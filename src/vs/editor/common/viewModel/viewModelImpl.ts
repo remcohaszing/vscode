@@ -202,7 +202,7 @@ export class ViewModel extends Disposable implements IViewModel {
 			return [];
 		}
 		const decorations = this.model.getCustomLineHeightsDecorations(this._editorId);
-		return CustomLineHeightData.fromDecorations(decorations, this.coordinatesConverter, this._configuration);
+		return CustomLineHeightData.fromDecorations(decorations, this.coordinatesConverter, this._configuration, this.model);
 	}
 
 	private _getCustomLineHeightsForLines(fromLineNumber: number, toLineNumber: number): CustomLineHeightData[] {
@@ -212,7 +212,7 @@ export class ViewModel extends Disposable implements IViewModel {
 		}
 		const modelRange = new Range(fromLineNumber, 1, toLineNumber, this.model.getLineMaxColumn(toLineNumber));
 		const decorations = this.model.getCustomLineHeightsDecorationsInRange(modelRange, this._editorId);
-		return CustomLineHeightData.fromDecorations(decorations, this.coordinatesConverter, this._configuration);
+		return CustomLineHeightData.fromDecorations(decorations, this.coordinatesConverter, this._configuration, this.model);
 	}
 
 	private _updateConfigurationViewLineCountNow(): void {
@@ -345,6 +345,7 @@ export class ViewModel extends Disposable implements IViewModel {
 			}
 			const lineBreaks = lineBreaksComputer.finalize();
 			const lineBreakQueue = new ArrayQueue(lineBreaks);
+			let shouldFlushViewLayout = false;
 
 			// Collect model line ranges that need custom line height computation.
 			// We defer this until after the loop because the coordinatesConverter
@@ -357,7 +358,7 @@ export class ViewModel extends Disposable implements IViewModel {
 						this._lines.onModelFlushed();
 						eventsCollector.emitViewEvent(new viewEvents.ViewFlushedEvent());
 						this._decorations.reset();
-						this.viewLayout.onFlushed(this.getLineCount(), this._getCustomLineHeights());
+						shouldFlushViewLayout = true;
 						hadOtherModelChange = true;
 						break;
 					}
@@ -369,6 +370,7 @@ export class ViewModel extends Disposable implements IViewModel {
 							customLineHeightRangesToInsert.push({ fromLineNumber: change.lastUntouchedLinePostEdit, toLineNumber: change.lastUntouchedLinePostEdit });
 						}
 						hadOtherModelChange = true;
+						shouldFlushViewLayout = true;
 						break;
 					}
 					case textModelEvents.RawContentChangedType.LinesInserted: {
@@ -380,6 +382,7 @@ export class ViewModel extends Disposable implements IViewModel {
 							customLineHeightRangesToInsert.push({ fromLineNumber: change.fromLineNumberPostEdit, toLineNumber: change.toLineNumberPostEdit });
 						}
 						hadOtherModelChange = true;
+						shouldFlushViewLayout = true;
 						break;
 					}
 					case textModelEvents.RawContentChangedType.LineChanged: {
@@ -400,6 +403,7 @@ export class ViewModel extends Disposable implements IViewModel {
 							this.viewLayout.onLinesDeleted(linesDeletedEvent.fromLineNumber, linesDeletedEvent.toLineNumber);
 							customLineHeightRangesToInsert.push({ fromLineNumber: change.lineNumberPostEdit, toLineNumber: change.lineNumberPostEdit });
 						}
+						shouldFlushViewLayout = true;
 						break;
 					}
 					case textModelEvents.RawContentChangedType.EOLChanged: {
@@ -407,6 +411,10 @@ export class ViewModel extends Disposable implements IViewModel {
 						break;
 					}
 				}
+			}
+
+			if (shouldFlushViewLayout) {
+				this.viewLayout.onFlushed(this.getLineCount(), this._getCustomLineHeights());
 			}
 
 			if (versionId !== null) {
@@ -477,8 +485,12 @@ export class ViewModel extends Disposable implements IViewModel {
 
 				this.viewLayout.changeSpecialLineHeights((accessor: ILineHeightChangeAccessor) => {
 					for (const change of filteredChanges) {
-						const { decorationId, lineNumber, lineHeightMultiplier } = change;
-						const viewRange = this.coordinatesConverter.convertModelRangeToViewRange(new Range(lineNumber, 1, lineNumber, this.model.getLineMaxColumn(lineNumber)));
+						const { decorationId, isWholeLine, lineHeightMultiplier, range } = change;
+						const viewRange = this.coordinatesConverter.convertModelRangeToViewRange(
+							isWholeLine
+								? new Range(range.startLineNumber, 1, range.endLineNumber, this.model.getLineMaxColumn(range.endLineNumber))
+								: range
+						);
 						if (lineHeightMultiplier !== null) {
 							accessor.insertOrChangeCustomLineHeight(decorationId, viewRange.startLineNumber, viewRange.endLineNumber, lineHeightMultiplier * this._configuration.options.get(EditorOption.lineHeight));
 						} else {

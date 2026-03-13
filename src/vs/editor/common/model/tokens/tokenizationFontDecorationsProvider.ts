@@ -49,6 +49,8 @@ export class TokenizationFontDecorationProvider extends Disposable implements De
 			for (const annotation of fontChanges.changes.annotations) {
 
 				const startPosition = this.textModel.getPositionAt(annotation.range.start);
+				const endPosition = this.textModel.getPositionAt(annotation.range.endExclusive);
+				const range = Range.fromPositions(startPosition, endPosition);
 				const lineNumber = startPosition.lineNumber;
 
 				let fontTokenAnnotation: IAnnotationUpdate<IFontTokenAnnotation>;
@@ -70,7 +72,7 @@ export class TokenizationFontDecorationProvider extends Disposable implements De
 					TokenizationFontDecorationProvider.DECORATION_COUNT++;
 
 					if (annotation.annotation.lineHeightMultiplier) {
-						affectedLineHeights.add(new LineHeightChangingDecoration(0, decorationId, lineNumber, annotation.annotation.lineHeightMultiplier));
+						affectedLineHeights.add(new LineHeightChangingDecoration(0, decorationId, range, annotation.annotation.lineHeightMultiplier, false));
 					}
 					affectedLineFonts.add(new LineFontChangingDecoration(0, decorationId, lineNumber));
 
@@ -85,7 +87,7 @@ export class TokenizationFontDecorationProvider extends Disposable implements De
 					const lineAnnotations = this._fontAnnotatedString.getAnnotationsIntersecting(lineOffsetRange);
 					for (const annotation of lineAnnotations) {
 						const decorationId = annotation.annotation.decorationId;
-						affectedLineHeights.add(new LineHeightChangingDecoration(0, decorationId, lineNumber, null));
+						affectedLineHeights.add(new LineHeightChangingDecoration(0, decorationId, range, null, false));
 						affectedLineFonts.add(new LineFontChangingDecoration(0, decorationId, lineNumber));
 					}
 					linesChanged.add(lineNumber);
@@ -109,9 +111,11 @@ export class TokenizationFontDecorationProvider extends Disposable implements De
 		const affectedLineFonts = new Set<LineFontChangingDecoration>();
 		for (const deletedAnnotation of deletedAnnotations) {
 			const startPosition = this.textModel.getPositionAt(deletedAnnotation.range.start);
+			const endPosition = this.textModel.getPositionAt(deletedAnnotation.range.endExclusive);
+			const range = Range.fromPositions(startPosition, endPosition);
 			const lineNumber = startPosition.lineNumber;
 			const decorationId = deletedAnnotation.annotation.decorationId;
-			affectedLineHeights.add(new LineHeightChangingDecoration(0, decorationId, lineNumber, null));
+			affectedLineHeights.add(new LineHeightChangingDecoration(0, decorationId, range, null, false));
 			affectedLineFonts.add(new LineFontChangingDecoration(0, decorationId, lineNumber));
 		}
 		this._onDidChangeLineHeight.fire(affectedLineHeights);

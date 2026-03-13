@@ -8,7 +8,8 @@ import { intersection } from '../../../base/common/collections.js';
 import { IEditorConfiguration } from '../config/editorConfiguration.js';
 import { EditorOption } from '../config/editorOptions.js';
 import { ICoordinatesConverter } from '../coordinatesConverter.js';
-import { IModelDecoration } from '../model.js';
+import { Range } from '../core/range.js';
+import { IModelDecoration, ITextModel } from '../model.js';
 
 const enum PendingChangeKind {
 	InsertOrChange,
@@ -450,10 +451,15 @@ export class CustomLineHeightData {
 		readonly lineHeight: number
 	) { }
 
-	public static fromDecorations(decorations: IModelDecoration[], coordinatesConverter: ICoordinatesConverter, configuration: IEditorConfiguration): CustomLineHeightData[] {
+	public static fromDecorations(decorations: IModelDecoration[], coordinatesConverter: ICoordinatesConverter, configuration: IEditorConfiguration, model: ITextModel): CustomLineHeightData[] {
 		const defaultLineHeight = configuration.options.get(EditorOption.lineHeight);
 		return decorations.map((d) => {
-			const viewRange = coordinatesConverter.convertModelRangeToViewRange(d.range);
+			const range = d.range;
+			const viewRange = coordinatesConverter.convertModelRangeToViewRange(
+				d.options.isWholeLine
+					? new Range(range.startLineNumber, 1, range.endLineNumber, model.getLineMaxColumn(range.endLineNumber))
+					: range,
+			);
 			return new CustomLineHeightData(
 				d.id,
 				viewRange.startLineNumber,

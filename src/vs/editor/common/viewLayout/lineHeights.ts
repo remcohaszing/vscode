@@ -10,6 +10,7 @@ import { EditorOption } from '../config/editorOptions.js';
 import { ICoordinatesConverter } from '../coordinatesConverter.js';
 import { Range } from '../core/range.js';
 import { IModelDecoration, ITextModel } from '../model.js';
+import { IViewModelLines } from '../viewModel/viewModelLines.js';
 
 const enum PendingChangeKind {
 	InsertOrChange,
@@ -19,7 +20,7 @@ const enum PendingChangeKind {
 }
 
 type PendingChange =
-	| { readonly kind: PendingChangeKind.InsertOrChange; readonly decorationId: string; readonly startLineNumber: number; readonly endLineNumber: number; readonly lineHeight: number }
+	| { readonly kind: PendingChangeKind.InsertOrChange; readonly decorationId: string; readonly startLineNumber: number; readonly startColumn: number; readonly endLineNumber: number; readonly endColumn: number; readonly lineHeight: number }
 	| { readonly kind: PendingChangeKind.Remove; readonly decorationId: string }
 	| { readonly kind: PendingChangeKind.LinesDeleted; readonly fromLineNumber: number; readonly toLineNumber: number }
 	| { readonly kind: PendingChangeKind.LinesInserted; readonly fromLineNumber: number; readonly toLineNumber: number };
@@ -28,16 +29,20 @@ export class CustomLine {
 
 	public index: number;
 	public lineNumber: number;
+	public startColumn: number;
+	public endColumn: number;
 	public specialHeight: number;
 	public prefixSum: number;
 	public maximumSpecialHeight: number;
 	public decorationId: string;
 	public deleted: boolean;
 
-	constructor(decorationId: string, index: number, lineNumber: number, specialHeight: number, prefixSum: number) {
+	constructor(decorationId: string, index: number, lineNumber: number, startColumn: number, endColumn: number, specialHeight: number, prefixSum: number) {
 		this.decorationId = decorationId;
 		this.index = index;
 		this.lineNumber = lineNumber;
+		this.startColumn = startColumn;
+		this.endColumn = endColumn;
 		this.specialHeight = Math.round(specialHeight);
 		this.prefixSum = prefixSum;
 		this.maximumSpecialHeight = Math.round(specialHeight);
@@ -73,6 +78,7 @@ export class CustomLine {
  */
 export class LineHeightsManager {
 
+	private _lines: IViewModelLines;
 	private _decorationIDToCustomLine: ArrayMap<string, CustomLine> = new ArrayMap<string, CustomLine>();
 	private _orderedCustomLines: CustomLine[] = [];
 	private _pendingChanges: PendingChange[] = [];
@@ -80,10 +86,11 @@ export class LineHeightsManager {
 	private _defaultLineHeight: number;
 	private _hasPending: boolean = false;
 
-	constructor(defaultLineHeight: number, customLineHeightData: CustomLineHeightData[]) {
+	constructor(lines: IViewModelLines, defaultLineHeight: number, customLineHeightData: CustomLineHeightData[]) {
+		this._lines = lines;
 		this._defaultLineHeight = defaultLineHeight;
 		for (const data of customLineHeightData) {
-			this.insertOrChangeCustomLineHeight(data.decorationId, data.startLineNumber, data.endLineNumber, data.lineHeight);
+			this.insertOrChangeCustomLineHeight(data.decorationId, data.startLineNumber, data.startColumn, data.endLineNumber, data.endColumn, data.lineHeight);
 		}
 	}
 
@@ -100,8 +107,8 @@ export class LineHeightsManager {
 		this._hasPending = true;
 	}
 
-	public insertOrChangeCustomLineHeight(decorationId: string, startLineNumber: number, endLineNumber: number, lineHeight: number): void {
-		this._pendingChanges.push({ kind: PendingChangeKind.InsertOrChange, decorationId, startLineNumber, endLineNumber, lineHeight });
+	public insertOrChangeCustomLineHeight(decorationId: string, startLineNumber: number, startColumn: number, endLineNumber: number, endColumn: number, lineHeight: number): void {
+		this._pendingChanges.push({ kind: PendingChangeKind.InsertOrChange, decorationId, startLineNumber, startColumn, endLineNumber, endColumn, lineHeight });
 		this._hasPending = true;
 	}
 
@@ -154,7 +161,7 @@ export class LineHeightsManager {
 					this._doRemoveCustomLineHeight(change.decorationId, stagedIdMap);
 					break;
 				case PendingChangeKind.InsertOrChange:
-					this._doInsertOrChangeCustomLineHeight(change.decorationId, change.startLineNumber, change.endLineNumber, change.lineHeight, stagedInserts, stagedIdMap);
+					this._doInsertOrChangeCustomLineHeight(change.decorationId, change.startLineNumber, change.startColumn, change.endLineNumber, change.endColumn, change.lineHeight, stagedInserts, stagedIdMap);
 					break;
 				case PendingChangeKind.LinesDeleted:
 					this._flushStagedDecorationChanges(stagedInserts, stagedIdMap);
@@ -187,10 +194,18 @@ export class LineHeightsManager {
 		}
 	}
 
-	private _doInsertOrChangeCustomLineHeight(decorationId: string, startLineNumber: number, endLineNumber: number, lineHeight: number, stagedInserts: CustomLine[], stagedIdMap: ArrayMap<string, CustomLine>): void {
+	private _doInsertOrChangeCustomLineHeight(decorationId: string, startLineNumber: number, startColumn: number, endLineNumber: number, endColumn: number, lineHeight: number, stagedInserts: CustomLine[], stagedIdMap: ArrayMap<string, CustomLine>): void {
 		this._doRemoveCustomLineHeight(decorationId, stagedIdMap);
 		for (let lineNumber = startLineNumber; lineNumber <= endLineNumber; lineNumber++) {
-			const customLine = new CustomLine(decorationId, -1, lineNumber, lineHeight, 0);
+			const customLine = new CustomLine(
+				decorationId,
+				-1,
+				lineNumber,
+				lineNumber === startLineNumber ? startColumn : 1,
+				lineNumber === endLineNumber ? endColumn : this._lines.getViewLineMaxColumn(lineNumber),
+				lineHeight,
+				0,
+			);
 			stagedInserts.push(customLine);
 			stagedIdMap.add(decorationId, customLine);
 		}
@@ -236,7 +251,9 @@ export class LineHeightsManager {
 				customLine.maximumSpecialHeight = previousSpecialLine.maximumSpecialHeight;
 				customLine.prefixSum = previousSpecialLine.prefixSum;
 			} else {
-				let maximumSpecialHeight = customLine.specialHeight;
+				let maximumSpecialHeight = 0;
+				const maxColumn = this._lines.getViewLineMaxColumn(customLine.lineNumber);
+				const specialHeights = new Array<number>(maxColumn);
 				for (let j = i; j < this._orderedCustomLines.length; j++) {
 					const nextSpecialLine = this._orderedCustomLines[j];
 					if (nextSpecialLine.deleted) {
@@ -245,7 +262,12 @@ export class LineHeightsManager {
 					if (nextSpecialLine.lineNumber !== customLine.lineNumber) {
 						break;
 					}
-					maximumSpecialHeight = Math.max(maximumSpecialHeight, nextSpecialLine.specialHeight);
+					for (let column = nextSpecialLine.startColumn; column <= nextSpecialLine.endColumn; column++) {
+						specialHeights[column - 1] = Math.max(specialHeights[column - 1] ?? 0, nextSpecialLine.specialHeight);
+					}
+				}
+				for (let j = 0; j < specialHeights.length; j++) {
+					maximumSpecialHeight = Math.max(maximumSpecialHeight, specialHeights[j] ?? this._defaultLineHeight);
 				}
 				customLine.maximumSpecialHeight = maximumSpecialHeight;
 
@@ -411,19 +433,23 @@ export class LineHeightsManager {
 				const decoration = this._decorationIDToCustomLine.get(decorationId);
 				if (decoration) {
 					const startLineNumber = decoration.reduce((min, l) => Math.min(min, l.lineNumber), fromLineNumber); // min
+					const startColumn = decoration.reduce((max, l) => Math.max(max, l.startColumn), 1); // max
 					const endLineNumber = decoration.reduce((max, l) => Math.max(max, l.lineNumber), fromLineNumber); // max
+					const endColumn = decoration.reduce((min, l) => Math.min(min, l.endColumn), this._lines.getViewLineMaxColumn(endLineNumber)); // min
 					const lineHeight = decoration.reduce((max, l) => Math.max(max, l.specialHeight), 0);
 					toReAdd.push({
 						decorationId,
 						startLineNumber,
+						startColumn,
 						endLineNumber,
+						endColumn,
 						lineHeight
 					});
 				}
 			}
 
 			for (const dec of toReAdd) {
-				this._doInsertOrChangeCustomLineHeight(dec.decorationId, dec.startLineNumber, dec.endLineNumber, dec.lineHeight, stagedInserts, stagedIdMap);
+				this._doInsertOrChangeCustomLineHeight(dec.decorationId, dec.startLineNumber, dec.startColumn, dec.endLineNumber, dec.endColumn, dec.lineHeight, stagedInserts, stagedIdMap);
 			}
 		}
 	}
@@ -447,7 +473,9 @@ export class CustomLineHeightData {
 	constructor(
 		readonly decorationId: string,
 		readonly startLineNumber: number,
+		readonly startColumn: number,
 		readonly endLineNumber: number,
+		readonly endColumn: number,
 		readonly lineHeight: number
 	) { }
 
@@ -463,7 +491,9 @@ export class CustomLineHeightData {
 			return new CustomLineHeightData(
 				d.id,
 				viewRange.startLineNumber,
+				viewRange.startColumn,
 				viewRange.endLineNumber,
+				viewRange.endColumn,
 				d.options.lineHeight ? d.options.lineHeight * defaultLineHeight : 0
 			);
 		});

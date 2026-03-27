@@ -123,7 +123,7 @@ export class ViewModel extends Disposable implements IViewModel {
 
 		this._cursor = this._register(new CursorsController(model, this, this.coordinatesConverter, this.cursorConfig));
 
-		this.viewLayout = this._register(new ViewLayout(this._configuration, this.getLineCount(), this._getCustomLineHeights(), scheduleAtNextAnimationFrame));
+		this.viewLayout = this._register(new ViewLayout(this._configuration, this._lines, this.getLineCount(), this._getCustomLineHeights(), scheduleAtNextAnimationFrame));
 
 		this._register(this.viewLayout.onDidScroll((e) => {
 			if (e.scrollTopChanged) {
@@ -427,7 +427,7 @@ export class ViewModel extends Disposable implements IViewModel {
 					for (const range of customLineHeightRangesToInsert) {
 						const customLineHeights = this._getCustomLineHeightsForLines(range.fromLineNumber, range.toLineNumber);
 						for (const data of customLineHeights) {
-							accessor.insertOrChangeCustomLineHeight(data.decorationId, data.startLineNumber, data.endLineNumber, data.lineHeight);
+							accessor.insertOrChangeCustomLineHeight(data.decorationId, data.startLineNumber, data.startColumn, data.endLineNumber, data.endColumn, data.lineHeight);
 						}
 					}
 				});
@@ -492,7 +492,7 @@ export class ViewModel extends Disposable implements IViewModel {
 								: range
 						);
 						if (lineHeightMultiplier !== null) {
-							accessor.insertOrChangeCustomLineHeight(decorationId, viewRange.startLineNumber, viewRange.endLineNumber, lineHeightMultiplier * this._configuration.options.get(EditorOption.lineHeight));
+							accessor.insertOrChangeCustomLineHeight(decorationId, viewRange.startLineNumber, viewRange.startColumn, viewRange.endLineNumber, viewRange.endColumn, lineHeightMultiplier * this._configuration.options.get(EditorOption.lineHeight));
 						} else {
 							accessor.removeCustomLineHeight(decorationId);
 						}

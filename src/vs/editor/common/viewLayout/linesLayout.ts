@@ -6,6 +6,7 @@
 import { IEditorWhitespace, IPartialViewLinesViewportData, ILineHeightChangeAccessor, IViewWhitespaceViewportData, IWhitespaceChangeAccessor } from '../viewModel.js';
 import * as strings from '../../../base/common/strings.js';
 import { CustomLineHeightData, LineHeightsManager } from './lineHeights.js';
+import { IViewModelLines } from '../viewModel/viewModelLines.js';
 
 interface IPendingChange { id: string; newAfterLineNumber: number; newHeight: number }
 interface IPendingRemove { id: string }
@@ -84,6 +85,7 @@ export class LinesLayout {
 
 	private static INSTANCE_COUNT = 0;
 
+	private readonly _lines: IViewModelLines;
 	private readonly _instanceId: string;
 	private readonly _pendingChanges: PendingChanges;
 	private _lastWhitespaceId: number;
@@ -95,7 +97,8 @@ export class LinesLayout {
 	private _paddingBottom: number;
 	private _lineHeightsManager: LineHeightsManager;
 
-	constructor(lineCount: number, defaultLineHeight: number, paddingTop: number, paddingBottom: number, customLineHeightData: CustomLineHeightData[]) {
+	constructor(lines: IViewModelLines, lineCount: number, defaultLineHeight: number, paddingTop: number, paddingBottom: number, customLineHeightData: CustomLineHeightData[]) {
+		this._lines = lines;
 		this._instanceId = strings.singleLetterHash(++LinesLayout.INSTANCE_COUNT);
 		this._pendingChanges = new PendingChanges();
 		this._lastWhitespaceId = 0;
@@ -105,7 +108,7 @@ export class LinesLayout {
 		this._lineCount = lineCount;
 		this._paddingTop = paddingTop;
 		this._paddingBottom = paddingBottom;
-		this._lineHeightsManager = new LineHeightsManager(defaultLineHeight, customLineHeightData);
+		this._lineHeightsManager = new LineHeightsManager(lines, defaultLineHeight, customLineHeightData);
 	}
 
 	/**
@@ -157,15 +160,15 @@ export class LinesLayout {
 	 */
 	public onFlushed(lineCount: number, customLineHeightData: CustomLineHeightData[]): void {
 		this._lineCount = lineCount;
-		this._lineHeightsManager = new LineHeightsManager(this._lineHeightsManager.defaultLineHeight, customLineHeightData);
+		this._lineHeightsManager = new LineHeightsManager(this._lines, this._lineHeightsManager.defaultLineHeight, customLineHeightData);
 	}
 
 	public changeLineHeights(callback: (accessor: ILineHeightChangeAccessor) => void): boolean {
 		let hadAChange = false;
 		const accessor: ILineHeightChangeAccessor = {
-			insertOrChangeCustomLineHeight: (decorationId: string, startLineNumber: number, endLineNumber: number, lineHeight: number): void => {
+			insertOrChangeCustomLineHeight: (decorationId: string, startLineNumber: number, startColumn: number, endLineNumber: number, endColumn: number, lineHeight: number): void => {
 				hadAChange = true;
-				this._lineHeightsManager.insertOrChangeCustomLineHeight(decorationId, startLineNumber, endLineNumber, lineHeight);
+				this._lineHeightsManager.insertOrChangeCustomLineHeight(decorationId, startLineNumber, startColumn, endLineNumber, endColumn, lineHeight);
 			},
 			removeCustomLineHeight: (decorationId: string): void => {
 				hadAChange = true;

@@ -171,7 +171,7 @@ export interface IWhitespaceChangeAccessor {
 }
 
 export interface ILineHeightChangeAccessor {
-	insertOrChangeCustomLineHeight(decorationId: string, startLineNumber: number, endLineNumber: number, lineHeight: number): void;
+	insertOrChangeCustomLineHeight(decorationId: string, startLineNumber: number, startColumn: number, endLineNumber: number, endColumn: number, lineHeight: number): void;
 	removeCustomLineHeight(decorationId: string): void;
 }
 

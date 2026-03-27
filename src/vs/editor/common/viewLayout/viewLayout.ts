@@ -13,6 +13,7 @@ import { LinesLayout } from './linesLayout.js';
 import { IEditorWhitespace, IPartialViewLinesViewportData, ILineHeightChangeAccessor, IViewLayout, IViewWhitespaceViewportData, IWhitespaceChangeAccessor, Viewport } from '../viewModel.js';
 import { ContentSizeChangedEvent } from '../viewModelEventDispatcher.js';
 import { CustomLineHeightData } from './lineHeights.js';
+import { IViewModelLines } from '../viewModel/viewModelLines.js';
 
 const SMOOTH_SCROLLING_TIME = 125;
 
@@ -156,6 +157,7 @@ class EditorScrollable extends Disposable {
 export class ViewLayout extends Disposable implements IViewLayout {
 
 	private readonly _configuration: IEditorConfiguration;
+	private readonly _lines: IViewModelLines;
 	private readonly _linesLayout: LinesLayout;
 	private _maxLineWidth: number;
 	private _overlayWidgetsMinWidth: number;
@@ -164,7 +166,7 @@ export class ViewLayout extends Disposable implements IViewLayout {
 	public readonly onDidScroll: Event<ScrollEvent>;
 	public readonly onDidContentSizeChange: Event<ContentSizeChangedEvent>;
 
-	constructor(configuration: IEditorConfiguration, lineCount: number, customLineHeightData: CustomLineHeightData[], scheduleAtNextAnimationFrame: (callback: () => void) => IDisposable) {
+	constructor(configuration: IEditorConfiguration, lines: IViewModelLines, lineCount: number, customLineHeightData: CustomLineHeightData[], scheduleAtNextAnimationFrame: (callback: () => void) => IDisposable) {
 		super();
 
 		this._configuration = configuration;
@@ -172,7 +174,8 @@ export class ViewLayout extends Disposable implements IViewLayout {
 		const layoutInfo = options.get(EditorOption.layoutInfo);
 		const padding = options.get(EditorOption.padding);
 
-		this._linesLayout = new LinesLayout(lineCount, options.get(EditorOption.lineHeight), padding.top, padding.bottom, customLineHeightData);
+		this._lines = lines;
+		this._linesLayout = new LinesLayout(lines, lineCount, options.get(EditorOption.lineHeight), padding.top, padding.bottom, customLineHeightData);
 		this._maxLineWidth = 0;
 		this._overlayWidgetsMinWidth = 0;
 

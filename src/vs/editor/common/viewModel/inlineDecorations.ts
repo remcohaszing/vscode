@@ -40,6 +40,10 @@ export interface IViewDecorationsCollection {
 	 * Whether the decorations affect the fonts.
 	 */
 	readonly hasVariableFonts: boolean[];
+	/**
+	 * The maximum font size of the decorations.
+	 */
+	readonly maxFontSize: number[];
 }
 
 export interface IInlineDecorationsComputer {
@@ -50,10 +54,12 @@ export interface IInlineDecorationsComputer {
 }
 
 export interface IInlineModelDecorationsComputerContext {
+	getEditorFontSize(): number;
 	/**
 	 * Get model decorations for a view range
 	 */
 	getModelDecorations(viewRange: Range, onlyMinimapDecorations: boolean, onlyMarginDecorations: boolean): IModelDecoration[];
+	getViewLineMaxColumn(viewLineNumber: number): number;
 }
 
 export class InlineModelDecorationsComputer implements IInlineDecorationsComputer {
@@ -84,9 +90,12 @@ export class InlineModelDecorationsComputer implements IInlineDecorationsCompute
 		let decorationsInViewportLen = 0;
 		const inlineDecorations: InlineDecoration[][] = [];
 		const hasVariableFonts: boolean[] = [];
+		const maxFontSizes: number[][] = [];
+		const editorFontSize = this.context.getEditorFontSize();
 		for (let j = startLineNumber; j <= endLineNumber; j++) {
 			inlineDecorations[j - startLineNumber] = [];
 			hasVariableFonts[j - startLineNumber] = false;
+			maxFontSizes[j - startLineNumber] = new Array(this.context.getViewLineMaxColumn(j));
 		}
 
 		for (let i = 0, len = modelDecorations.length; i < len; i++) {
@@ -101,6 +110,22 @@ export class InlineModelDecorationsComputer implements IInlineDecorationsCompute
 			const viewRange = viewModelDecoration.range;
 
 			decorationsInViewport[decorationsInViewportLen++] = viewModelDecoration;
+
+			if (decorationOptions.fontSize !== null && decorationOptions.fontSize !== undefined) {
+				const fontSize = Number(decorationOptions.fontSize);
+				const intersectedStartLineNumber = Math.max(startLineNumber, viewRange.startLineNumber);
+				const intersectedEndLineNumber = Math.min(endLineNumber, viewRange.endLineNumber);
+				if (Number.isFinite(fontSize)) {
+					for (let j = intersectedStartLineNumber; j <= intersectedEndLineNumber; j++) {
+						const characterSizes = maxFontSizes[j - startLineNumber];
+						const startColumn = j === intersectedStartLineNumber ? viewRange.startColumn : 1;
+						const endColumn = j === intersectedEndLineNumber ? viewRange.endColumn : characterSizes.length;
+						for (let column = startColumn - 1; column < endColumn; column++) {
+							characterSizes[column] = Math.max(characterSizes[column] ?? 0, fontSize);
+						}
+					}
+				}
+			}
 
 			if (decorationOptions.inlineClassName) {
 				const inlineDecoration = new InlineDecoration(viewRange, decorationOptions.inlineClassName, decorationOptions.inlineClassNameAffectsLetterSpacing ? InlineDecorationType.RegularAffectingLetterSpacing : InlineDecorationType.Regular);
@@ -141,10 +166,19 @@ export class InlineModelDecorationsComputer implements IInlineDecorationsCompute
 			}
 		}
 
+		const maxFontSize: number[] = maxFontSizes.map((characterSizes) => {
+			let max = 0;
+			for (const size of characterSizes) {
+				max = Math.max(max, Math.floor((size ?? 1) * editorFontSize));
+			}
+			return max;
+		});
+
 		return {
 			decorations: decorationsInViewport,
 			inlineDecorations: inlineDecorations,
-			hasVariableFonts
+			hasVariableFonts,
+			maxFontSize
 		};
 	}
 

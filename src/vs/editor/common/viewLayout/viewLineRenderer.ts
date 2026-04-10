@@ -1041,11 +1041,13 @@ function _renderLine(input: ResolvedRenderLineInput, sb: StringBuilder): RenderL
 				}
 			}
 
+			sb.appendString(' style="');
 			if (partRendersWhitespaceWithWidth) {
-				sb.appendString(' style="width:');
+				sb.appendString('width:');
 				sb.appendString(String(spaceWidth * partWidth));
-				sb.appendString('px"');
+				sb.appendString('px');
 			}
+			sb.appendASCIICharCode(CharCode.DoubleQuote);
 			sb.appendASCIICharCode(CharCode.GreaterThan);
 
 			for (; charIndex < partEndIndex; charIndex++) {

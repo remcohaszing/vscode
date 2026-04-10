@@ -894,15 +894,16 @@ export class ViewModel extends Disposable implements IViewModel {
 		const relativeLineNumber = lineNumber - visibleRange.startLineNumber;
 		const inlineDecorations = viewportDecorationsCollection.inlineDecorations[relativeLineNumber];
 		const hasVariableFonts = viewportDecorationsCollection.hasVariableFonts[relativeLineNumber];
-		return this._getViewLineRenderingData(lineNumber, inlineDecorations, hasVariableFonts, viewportDecorationsCollection.decorations);
+		const maxFontSize = viewportDecorationsCollection.maxFontSize[relativeLineNumber];
+		return this._getViewLineRenderingData(lineNumber, inlineDecorations, hasVariableFonts, maxFontSize, viewportDecorationsCollection.decorations);
 	}
 
 	public getViewLineRenderingData(lineNumber: number): ViewLineRenderingData {
 		const decorationsCollection = this._decorations.getDecorationsOnLine(lineNumber);
-		return this._getViewLineRenderingData(lineNumber, decorationsCollection.inlineDecorations[0], decorationsCollection.hasVariableFonts[0], decorationsCollection.decorations);
+		return this._getViewLineRenderingData(lineNumber, decorationsCollection.inlineDecorations[0], decorationsCollection.hasVariableFonts[0], decorationsCollection.maxFontSize[0], decorationsCollection.decorations);
 	}
 
-	private _getViewLineRenderingData(lineNumber: number, inlineDecorations: InlineDecoration[], hasVariableFonts: boolean, decorations: ViewModelDecoration[]): ViewLineRenderingData {
+	private _getViewLineRenderingData(lineNumber: number, inlineDecorations: InlineDecoration[], hasVariableFonts: boolean, maxFontSize: number, decorations: ViewModelDecoration[]): ViewLineRenderingData {
 		const mightContainRTL = this.model.mightContainRTL();
 		const mightContainNonBasicASCII = this.model.mightContainNonBasicASCII();
 		const tabSize = this.getTabSize();
@@ -925,6 +926,7 @@ export class ViewModel extends Disposable implements IViewModel {
 			lineData.tokens,
 			inlineDecorations,
 			tabSize,
+			maxFontSize,
 			lineData.startVisibleColumn,
 			this._getTextDirection(lineNumber, decorations),
 			hasVariableFonts

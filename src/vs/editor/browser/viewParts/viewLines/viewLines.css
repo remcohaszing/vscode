@@ -71,6 +71,10 @@
 	position: absolute;
 }
 
+.monaco-editor .lines-content > .view-lines > .view-line > span > span[class="mtk1"] {
+	font-size: var(--editor-font-size);
+}
+
 .monaco-editor .mtkw {
 	color: var(--vscode-editorWhitespace-foreground) !important;
 }

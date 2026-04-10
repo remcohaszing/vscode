@@ -336,6 +336,7 @@ export class ViewLineRenderingData {
 	 * The tab size for this view model.
 	 */
 	public readonly tabSize: number;
+	public readonly fontSize: number;
 	/**
 	 * The visible column at the start of the line (after the fauxIndent)
 	 */
@@ -359,6 +360,7 @@ export class ViewLineRenderingData {
 		tokens: IViewLineTokens,
 		inlineDecorations: InlineDecoration[],
 		tabSize: number,
+		fontSize: number,
 		startVisibleColumn: number,
 		textDirection: TextDirection,
 		hasVariableFonts: boolean
@@ -374,6 +376,7 @@ export class ViewLineRenderingData {
 		this.tokens = tokens;
 		this.inlineDecorations = inlineDecorations;
 		this.tabSize = tabSize;
+		this.fontSize = fontSize;
 		this.startVisibleColumn = startVisibleColumn;
 		this.textDirection = textDirection;
 		this.hasVariableFonts = hasVariableFonts;

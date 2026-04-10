@@ -72,6 +72,7 @@ function createLineBreaks(targetWindow: Window, context: ILineBreaksComputerCont
 
 	const containerDomNode = document.createElement('div');
 	applyFontInfo(containerDomNode, fontInfo);
+	containerDomNode.style.setProperty('--editor-font-size', fontInfo.fontSize + 'px');
 
 	const sb = new StringBuilder(10000);
 	const firstNonWhitespaceIndices: number[] = [];

@@ -11,7 +11,7 @@ import { IViewModelLines } from './viewModelLines.js';
 import { ViewModelDecoration } from './viewModelDecoration.js';
 import { IViewDecorationsCollection, IInlineModelDecorationsComputerContext, InlineModelDecorationsComputer } from './inlineDecorations.js';
 import { ICoordinatesConverter } from '../coordinatesConverter.js';
-import { filterFontDecorations, filterValidationDecorations } from '../config/editorOptions.js';
+import { EditorOption, filterFontDecorations, filterValidationDecorations } from '../config/editorOptions.js';
 
 export class ViewModelDecorations implements IDisposable {
 
@@ -29,7 +29,9 @@ export class ViewModelDecorations implements IDisposable {
 		this.configuration = configuration;
 		this._linesCollection = linesCollection;
 		const context: IInlineModelDecorationsComputerContext = {
-			getModelDecorations: (viewRange: Range, onlyMinimapDecorations: boolean, onlyMarginDecorations: boolean) => this._linesCollection.getDecorationsInRange(viewRange, this.editorId, filterValidationDecorations(this.configuration.options), filterFontDecorations(this.configuration.options), onlyMinimapDecorations, onlyMarginDecorations)
+			getEditorFontSize: () => this.configuration.options.get(EditorOption.fontSize),
+			getModelDecorations: (viewRange: Range, onlyMinimapDecorations: boolean, onlyMarginDecorations: boolean) => this._linesCollection.getDecorationsInRange(viewRange, this.editorId, filterValidationDecorations(this.configuration.options), filterFontDecorations(this.configuration.options), onlyMinimapDecorations, onlyMarginDecorations),
+			getViewLineMaxColumn: (viewLineNumber: number) => this._linesCollection.getViewLineMaxColumn(viewLineNumber)
 		};
 		this._inlineDecorationsComputer = new InlineModelDecorationsComputer(context, model, coordinatesConverter);
 		this._cachedModelDecorationsResolver = null;

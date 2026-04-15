@@ -49,7 +49,7 @@ h1 {
 }
 
 .big-inline {
-	font-size: calc(var(--editor-font-size) * 1.286);
+	font-size: calc(var(--editor-font-size) * 1.5);
 	font-weight: bold;
 	color: #00a7da !important;
 }

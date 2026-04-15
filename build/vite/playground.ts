@@ -70,7 +70,6 @@ const editor = monaco.editor.create(document.getElementById('editor')!, {
 	},
 	lineNumbers: 'off',
 	fontSize: 14,
-	glyphMargin: true,
 	wordWrap: 'on',
 	wrappingStrategy: 'advanced',
 	model,
@@ -148,8 +147,8 @@ registerDecoratorButton('small-inline', {
 registerDecoratorButton('big-inline', {
 	inlineClassName: `big-inline`,
 	inlineClassNameAffectsLetterSpacing: true,
-	fontSize: '1.286',
-	lineHeight: 1.286
+	fontSize: '1.5',
+	lineHeight: 1.5
 });
 
 

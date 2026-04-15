@@ -2623,6 +2623,7 @@ class DidChangeDecorationsEmitter extends Disposable {
 	private _affectedFontLines: SetWithKey<LineFontChangingDecoration> | null = null;
 	private _affectsGlyphMargin: boolean;
 	private _affectsLineNumber: boolean;
+	private _affectsFont: boolean;
 
 	constructor(private readonly handleBeforeFire: (affectedInjectedTextLines: Set<number> | null, affectedLineHeights: SetWithKey<LineHeightChangingDecoration> | null, affectedFontLines: SetWithKey<LineFontChangingDecoration> | null) => void) {
 		super();
@@ -2632,6 +2633,7 @@ class DidChangeDecorationsEmitter extends Disposable {
 		this._affectsOverviewRuler = false;
 		this._affectsGlyphMargin = false;
 		this._affectsLineNumber = false;
+		this._affectsFont = false;
 	}
 
 	hasListeners(): boolean {
@@ -2684,6 +2686,7 @@ class DidChangeDecorationsEmitter extends Disposable {
 		this._affectsOverviewRuler ||= !!options.overviewRuler?.color;
 		this._affectsGlyphMargin ||= !!options.glyphMarginClassName;
 		this._affectsLineNumber ||= !!options.lineNumberClassName;
+		this._affectsFont ||= !!options.affectsFont;
 		this.tryFire();
 	}
 
@@ -2691,6 +2694,7 @@ class DidChangeDecorationsEmitter extends Disposable {
 		this._affectsMinimap = true;
 		this._affectsOverviewRuler = true;
 		this._affectsGlyphMargin = true;
+		this._affectsFont = true;
 		this.tryFire();
 	}
 
@@ -2710,11 +2714,13 @@ class DidChangeDecorationsEmitter extends Disposable {
 			affectsOverviewRuler: this._affectsOverviewRuler,
 			affectsGlyphMargin: this._affectsGlyphMargin,
 			affectsLineNumber: this._affectsLineNumber,
+			affectsFont: this._affectsFont
 		};
 		this._shouldFireDeferred = false;
 		this._affectsMinimap = false;
 		this._affectsOverviewRuler = false;
 		this._affectsGlyphMargin = false;
+		this._affectsFont = false;
 		this._actual.fire(event);
 	}
 }

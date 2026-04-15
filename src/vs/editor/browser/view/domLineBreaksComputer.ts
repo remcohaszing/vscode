@@ -374,9 +374,14 @@ function readLineBreaks(range: Range, lineDomNode: HTMLDivElement, lineContent: 
 			lineOffset += chunkSize;
 		} else if (rects.length === 1) {
 			const rect = rects[0];
+			const rectHeight = rect.bottom - rect.top;
 			const middle = (rect.top + rect.bottom) / 2;
 
-			if (previousMiddle !== undefined && Math.abs(previousMiddle - middle) > 0.5) {
+			// Use 10% of rect height as threshold, minimum 1px
+			// A real line break would change middle by ~rectHeight, not ~10% of it
+			const threshold = Math.max(1, rectHeight * 0.1);
+
+			if (previousMiddle !== undefined && Math.abs(previousMiddle - middle) > threshold) {
 				breakOffsets.push(lineOffset);
 			}
 

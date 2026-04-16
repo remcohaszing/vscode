@@ -978,12 +978,68 @@ export class MouseTargetFactory {
 
 			const r = this._actualDoHitTestWithCaretRangeFromPoint(ctx, adjustedPage.toClientCoordinates(dom.getWindow(ctx.viewDomNode)));
 			if (r.type === HitTestResultType.Content) {
+				if (r.position.lineNumber !== lineNumber) {
+					// Browser returned wrong line due to variable font size decorations
+					const bestColumn = this._findClosestColumn(ctx, lineNumber, request.mouseContentHorizontalOffset);
+					return new ContentHitTestResult(
+						new Position(lineNumber, bestColumn),
+						r.spanNode,
+						r.injectedText
+					);
+				}
 				return r;
 			}
 		}
 
 		// Also try to hit test without the adjustment (for the edge cases that we are near the top or bottom)
 		return this._actualDoHitTestWithCaretRangeFromPoint(ctx, request.pos.toClientCoordinates(dom.getWindow(ctx.viewDomNode)));
+	}
+
+	/**
+ * Find the column on the given line that is closest to the horizontal mouse offset.
+ * Uses binary search with refinement for efficiency.
+ */
+	private static _findClosestColumn(ctx: HitTestContext, lineNumber: number, mouseContentHorizontalOffset: number): number {
+		const lineMaxColumn = ctx.viewModel.getLineMaxColumn(lineNumber);
+		let bestColumn = 1;
+		let bestDistance = Number.MAX_VALUE;
+
+		// Binary search for the closest column
+		let low = 1;
+		let high = lineMaxColumn;
+		while (low <= high) {
+			const mid = Math.floor((low + high) / 2);
+			const range = ctx.visibleRangeForPosition(lineNumber, mid);
+			if (!range) {
+				break;
+			}
+			const distance = Math.abs(range.left - mouseContentHorizontalOffset);
+			if (distance < bestDistance) {
+				bestDistance = distance;
+				bestColumn = mid;
+			}
+			if (range.left < mouseContentHorizontalOffset) {
+				low = mid + 1;
+			} else {
+				high = mid - 1;
+			}
+		}
+
+		// Refine: check neighboring columns for better match
+		for (const col of [bestColumn - 1, bestColumn + 1]) {
+			if (col >= 1 && col <= lineMaxColumn) {
+				const range = ctx.visibleRangeForPosition(lineNumber, col);
+				if (range) {
+					const distance = Math.abs(range.left - mouseContentHorizontalOffset);
+					if (distance < bestDistance) {
+						bestDistance = distance;
+						bestColumn = col;
+					}
+				}
+			}
+		}
+
+		return bestColumn;
 	}
 
 	private static _actualDoHitTestWithCaretRangeFromPoint(ctx: HitTestContext, coords: ClientCoordinates): HitTestResult {

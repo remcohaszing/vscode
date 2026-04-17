@@ -228,7 +228,7 @@ function renderLine(lineContent: string, initialVisibleColumn: number, tabSize: 
 			const charStart = isWholeLine ? 0 : inlineClassName.startColumn - 1;
 			const charEnd = isWholeLine ? inlineClassName.endColumn - 1 : Math.min(inlineClassName.endColumn - 1, len);
 
-			for (let charIndex = charStart; charIndex < charEnd; charIndex++) {
+			for (let charIndex = charStart; charIndex <= charEnd; charIndex++) {
 				classNames[charIndex] = classNames[charIndex] += ' ' + className;
 			}
 		}
@@ -236,7 +236,7 @@ function renderLine(lineContent: string, initialVisibleColumn: number, tabSize: 
 
 	// Forxe the text to be aligned vertically. We use the middle alignment to
 	// calculate whether or not a line is wrapped.
-	const style = '<span style="vertical-align:middle !important"';
+	const style = '<span style="vertical-align:top !important";line-height:var(--editor-font-size)!important';
 	sb.appendString('<span>');
 	sb.appendString(style);
 	sb.appendString('>');

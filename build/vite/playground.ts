@@ -68,9 +68,12 @@ const editor = monaco.editor.create(document.getElementById('editor')!, {
 		horizontalScrollbarSize,
 		verticalScrollbarSize
 	},
+	lineNumbers: 'off',
+	fontSize: 14,
 	wordWrap: 'on',
 	wrappingStrategy: 'advanced',
 	model,
+	lineHeight: 1
 });
 
 // Make the model and editor available globally for fiddling in the console.
@@ -123,7 +126,7 @@ function registerDecoratorButton(id: string, options: monaco.editor.IModelDecora
 			}
 		}
 
-		for (const id of model.deltaDecorations(oldDecorationIds, newDecorations)) {
+		for (const id of model.deltaDecorations([], newDecorations)) {
 			knownDecorationIds.add(id);
 		}
 	});
@@ -136,30 +139,81 @@ function registerDecoratorButton(id: string, options: monaco.editor.IModelDecora
 }
 
 registerDecoratorButton('small-inline', {
-	inlineClassName: `small-inline`,
+	inlineClassName: `small-inline-classname`,
 	inlineClassNameAffectsLetterSpacing: true,
-	fontSize: '0.3',
-	lineHeight: 0.3
+	fontSize: '0.5',
+	lineHeight: 0.25
 });
 
 registerDecoratorButton('big-inline', {
 	inlineClassName: `big-inline`,
 	inlineClassNameAffectsLetterSpacing: true,
-	fontSize: '2',
-	lineHeight: 2
-});
-
-registerDecoratorButton('big-whole-line', {
-	inlineClassName: `big-whole-line`,
-	inlineClassNameAffectsLetterSpacing: true,
-	isWholeLine: true,
 	fontSize: '1.5',
 	lineHeight: 1.5
 });
 
-registerDecoratorButton('rtl', {
-	isWholeLine: true,
-	textDirection: monaco.editor.TextDirection.RTL
+
+const increaseButton = document.getElementById('increase-size') as HTMLButtonElement;
+
+// Track decoration data by ID
+const decorationDataMap = new Map<string, { fontSize: number; lineHeight: number; inlineClassName: string }>();
+
+// Helper to find and update a CSS rule by class name
+function updateCssRule(className: string, newFontSize: number): void {
+	for (const sheet of document.styleSheets) {
+		try {
+			for (const rule of sheet.cssRules) {
+				if (rule instanceof CSSStyleRule && rule.selectorText === `.${className}`) {
+					rule.style.fontSize = `calc(var(--editor-font-size) * ${newFontSize})`;
+					return;
+				}
+			}
+		} catch {
+			// Skip cross-origin stylesheets
+		}
+	}
+}
+
+increaseButton.addEventListener('click', () => {
+	const selections = editor.getSelections();
+	if (!selections) {
+		return;
+	}
+
+	const increment = 0.1;
+
+	for (const selection of selections) {
+		const decorations = model.getDecorationsInRange(selection, undefined, true);
+
+		for (const decoration of decorations) {
+
+			const { options } = decoration;
+
+			if (!options.fontSize || !options.lineHeight || !options.inlineClassName) {
+				continue;
+			}
+
+			const newFontSize = parseFloat(options.fontSize) + increment;
+			const newLineHeight = options.lineHeight + increment;
+
+			// Update the CSS rule for this class
+			updateCssRule(options.inlineClassName, newFontSize);
+
+			// Update the options with new fontSize/lineHeight options
+			const newOptions: monaco.editor.IModelDecorationOptions = {
+				inlineClassName: options.inlineClassName,
+				inlineClassNameAffectsLetterSpacing: true,
+				fontSize: newFontSize.toString(),
+				lineHeight: newLineHeight
+			};
+
+			// Replace the decoration
+			model.deltaDecorations([decoration.id], [{
+				range: decoration.range,
+				options: newOptions
+			}]);
+		}
+	}
 });
 
 const scale = document.getElementById('scale') as HTMLInputElement;
@@ -180,3 +234,12 @@ monaco.editor.EditorZoom.onDidChangeZoomLevel((zoomLevel) => {
 
 	editor.getContainerDomNode().style.width = `${256 * factor}px`;
 });
+
+const fullRange = model.getFullModelRange();
+
+model.deltaDecorations([], [{
+	range: fullRange,
+	options: {
+		inlineClassName: 'cs-prompt-output',
+	}
+}]);

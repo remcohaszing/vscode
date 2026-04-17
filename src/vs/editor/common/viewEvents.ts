@@ -77,6 +77,7 @@ export class ViewDecorationsChangedEvent {
 	readonly affectsOverviewRuler: boolean;
 	readonly affectsGlyphMargin: boolean;
 	readonly affectsLineNumber: boolean;
+	readonly affectsFont: boolean;
 
 	constructor(source: IModelDecorationsChangedEvent | null) {
 		if (source) {
@@ -84,11 +85,13 @@ export class ViewDecorationsChangedEvent {
 			this.affectsOverviewRuler = source.affectsOverviewRuler;
 			this.affectsGlyphMargin = source.affectsGlyphMargin;
 			this.affectsLineNumber = source.affectsLineNumber;
+			this.affectsFont = source.affectsFont;
 		} else {
 			this.affectsMinimap = true;
 			this.affectsOverviewRuler = true;
 			this.affectsGlyphMargin = true;
 			this.affectsLineNumber = true;
+			this.affectsFont = true;
 		}
 	}
 }

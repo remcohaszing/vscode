@@ -250,6 +250,11 @@ export class ViewLines extends ViewPart implements IViewLines {
 		for (let lineNumber = rendStartLineNumber; lineNumber <= rendEndLineNumber; lineNumber++) {
 			this._visibleLines.getVisibleLine(lineNumber).onDecorationsChanged();
 		}
+
+		if (e.affectsFont) {
+			this.resetLineWidthCaches();
+		}
+
 		return true;
 	}
 	public override onFlushed(e: viewEvents.ViewFlushedEvent): boolean {

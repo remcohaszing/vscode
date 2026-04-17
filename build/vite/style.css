@@ -48,13 +48,9 @@ h1 {
 	width: 256px;
 }
 
-.big-inline {
-	font-size: calc(var(--editor-font-size) * 1.5);
+.small-inline-classname {
+	color: #009425 !important;
 	font-weight: bold;
-	color: #00a7da !important;
-}
-
-.small-inline {
 	font-size: calc(var(--editor-font-size) * 0.3);
 }
 
@@ -62,6 +58,15 @@ h1 {
 	font-size: calc(var(--editor-font-size) * 1.5);
 	font-weight: bold;
 	color: #009425 !important;
+}
+
+.cs-prompt-output {
+	color: red !important;
+}
+
+.big-inline {
+	font-size: calc(var(--editor-font-size) * 1.5);
+	color: #00a7da !important;
 }
 
 

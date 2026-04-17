@@ -73,6 +73,7 @@ const editor = monaco.editor.create(document.getElementById('editor')!, {
 	wordWrap: 'on',
 	wrappingStrategy: 'advanced',
 	model,
+	lineHeight: 1
 });
 
 // Make the model and editor available globally for fiddling in the console.
@@ -138,10 +139,10 @@ function registerDecoratorButton(id: string, options: monaco.editor.IModelDecora
 }
 
 registerDecoratorButton('small-inline', {
-	inlineClassName: `small-inline`,
+	inlineClassName: `small-inline-classname`,
 	inlineClassNameAffectsLetterSpacing: true,
-	fontSize: '0.3',
-	lineHeight: 0.3
+	fontSize: '0.5',
+	lineHeight: 0.25
 });
 
 registerDecoratorButton('big-inline', {
@@ -233,3 +234,12 @@ monaco.editor.EditorZoom.onDidChangeZoomLevel((zoomLevel) => {
 
 	editor.getContainerDomNode().style.width = `${256 * factor}px`;
 });
+
+const fullRange = model.getFullModelRange();
+
+model.deltaDecorations([], [{
+	range: fullRange,
+	options: {
+		inlineClassName: 'cs-prompt-output',
+	}
+}]);

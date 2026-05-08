@@ -10,10 +10,14 @@ import { assertReturnsDefined } from '../../../base/common/types.js';
 import { applyFontInfo } from '../config/domFontInfo.js';
 import { WrappingIndent } from '../../common/config/editorOptions.js';
 import { StringBuilder } from '../../common/core/stringBuilder.js';
-import { InjectedTextOptions } from '../../common/model.js';
+import { IModelDecoration, InjectedTextOptions, TextDirection } from '../../common/model.js';
 import { ILineBreaksComputer, ILineBreaksComputerContext, ILineBreaksComputerFactory, ModelLineProjectionData } from '../../common/modelLineProjectionData.js';
 import { InlineClassName, LineInjectedText } from '../../common/textModelEvents.js';
 import { FontInfo } from '../../common/config/fontInfo.js';
+import { RenderLineInput, renderViewLine } from '../../common/viewLayout/viewLineRenderer.js';
+import { IViewLineTokens } from '../../common/tokens/lineTokens.js';
+import { LineDecoration } from '../../common/viewLayout/lineDecorations.js';
+import { InlineDecorationType } from '../../common/viewModel/inlineDecorations.js';
 
 const ttPolicy = createTrustedTypesPolicy('domLineBreaksComputer', { createHTML: value => value });
 
@@ -120,7 +124,9 @@ function createLineBreaks(targetWindow: Window, context: ILineBreaksComputerCont
 		}
 
 		const renderLineContent = lineContent.substr(firstNonWhitespaceIndex);
-		allVisibleColumns[i] = renderLine(renderLineContent, wrappedTextIndentLength, tabSize, width, sb, additionalIndentLength, injectedTextsPerLine, inlineClassNamesPerLine);
+		const tokens = context.getLineTokens(lineNumber);
+		const customFontSizes = context.getLineCustomFontSizes(lineNumber);
+		allVisibleColumns[i] = renderLine(renderLineContent, wrappedTextIndentLength, tabSize, width, sb, additionalIndentLength, injectedTextsPerLine, inlineClassNamesPerLine, customFontSizes, fontInfo, tokens);
 		firstNonWhitespaceIndices[i] = firstNonWhitespaceIndex;
 		wrappedTextIndentLengths[i] = wrappedTextIndentLength;
 		renderLineContents[i] = renderLineContent;
@@ -190,143 +196,77 @@ function createLineBreaks(targetWindow: Window, context: ILineBreaksComputerCont
 	return result;
 }
 
-const enum Constants {
-	SPAN_MODULO_LIMIT = 16384
-}
-
-function renderLine(lineContent: string, initialVisibleColumn: number, tabSize: number, width: number, sb: StringBuilder, wrappingIndentLength: number, lineInjectedText: LineInjectedText[] | null, inlineClassNames: InlineClassName[] | null): number[] {
-
+function renderLine(lineContent: string, initialVisibleColumn: number, tabSize: number, width: number, sb: StringBuilder, wrappingIndentLength: number, lineInjectedText: LineInjectedText[] | null, inlineClassNames: InlineClassName[] | null, customFontSizes: IModelDecoration[], fontInfo: FontInfo, tokens: IViewLineTokens): number[] {
+	sb.appendString('<div class="monaco-dom-line-breaks-computer" style="');
 	if (wrappingIndentLength !== 0) {
 		const hangingOffset = String(wrappingIndentLength);
-		sb.appendString('<div style="text-indent: -');
+		sb.appendString('text-indent: -');
 		sb.appendString(hangingOffset);
 		sb.appendString('px; padding-left: ');
 		sb.appendString(hangingOffset);
-		sb.appendString('px; box-sizing: border-box; width:');
-	} else {
-		sb.appendString('<div style="width:');
+		sb.appendString('px; box-sizing: border-box;');
 	}
+	sb.appendString('width:');
 	sb.appendString(String(width));
 	sb.appendString('px;">');
-	// if (containsRTL) {
-	// 	sb.appendASCIIString('" dir="ltr');
-	// }
 
-	const len = lineContent.length;
-	let visibleColumn = initialVisibleColumn;
-	let charOffset = 0;
-	const visibleColumns: number[] = [];
-	let nextCharCode = (0 < len ? lineContent.charCodeAt(0) : CharCode.Null);
+	const lineDecorations: LineDecoration[] = [];
 
-	const classNames = new Array<string>(len).fill('');
 	if (inlineClassNames) {
-		const inlineClassNamesLength = inlineClassNames.length;
-		for (let i = 0; i < inlineClassNamesLength; i++) {
-			const inlineClassName = inlineClassNames[i];
-			const isWholeLine = inlineClassName.isWholeLine;
-			const className = inlineClassName.className;
-			const charStart = isWholeLine ? 0 : inlineClassName.startColumn - 1;
-			const charEnd = isWholeLine ? inlineClassName.endColumn - 1 : Math.min(inlineClassName.endColumn - 1, len);
-
-			for (let charIndex = charStart; charIndex <= charEnd; charIndex++) {
-				classNames[charIndex] = classNames[charIndex] += ' ' + className;
-			}
+		for (const inlineClassName of inlineClassNames) {
+			lineDecorations.push(new LineDecoration(
+				inlineClassName.startColumn,
+				inlineClassName.endColumn,
+				inlineClassName.className,
+				InlineDecorationType.RegularAffectingLetterSpacing,
+				0,
+			));
 		}
 	}
 
-	// Forxe the text to be aligned vertically. We use the middle alignment to
-	// calculate whether or not a line is wrapped.
-	const style = '<span style="vertical-align:top !important";line-height:var(--editor-font-size)!important';
-	sb.appendString('<span>');
-	sb.appendString(style);
-	sb.appendString('>');
-	let previousClassName: string | undefined;
-	for (let charIndex = 0; charIndex < len; charIndex++) {
-		const className = classNames[charIndex];
-		if (className !== previousClassName) {
-			sb.appendString('</span>');
-			sb.appendString(style);
-			if (className) {
-				sb.appendString(' class="');
-				sb.appendString(className);
-				sb.appendString('"');
-			}
-			sb.appendString('>');
-			previousClassName = className;
+	if (customFontSizes) {
+		for (const f of customFontSizes) {
+			lineDecorations.push(new LineDecoration(
+				f.range.startColumn,
+				f.range.endColumn,
+				'',
+				InlineDecorationType.RegularAffectingLetterSpacing,
+				Number(f.options.fontSize)
+			));
 		}
-		if (charIndex !== 0 && charIndex % Constants.SPAN_MODULO_LIMIT === 0) {
-			sb.appendString('</span></span><span><span>');
-		}
-		visibleColumns[charIndex] = visibleColumn;
-		const charCode = nextCharCode;
-		nextCharCode = (charIndex + 1 < len ? lineContent.charCodeAt(charIndex + 1) : CharCode.Null);
-		let producedCharacters = 1;
-		let charWidth = 1;
-		switch (charCode) {
-			case CharCode.Tab:
-				producedCharacters = (tabSize - (visibleColumn % tabSize));
-				charWidth = producedCharacters;
-				for (let space = 1; space <= producedCharacters; space++) {
-					if (space < producedCharacters) {
-						sb.appendCharCode(0xA0); // &nbsp;
-					} else {
-						sb.appendASCIICharCode(CharCode.Space);
-					}
-				}
-				break;
-
-			case CharCode.Space:
-				if (nextCharCode === CharCode.Space) {
-					sb.appendCharCode(0xA0); // &nbsp;
-				} else {
-					sb.appendASCIICharCode(CharCode.Space);
-				}
-				break;
-
-			case CharCode.LessThan:
-				sb.appendString('&lt;');
-				break;
-
-			case CharCode.GreaterThan:
-				sb.appendString('&gt;');
-				break;
-
-			case CharCode.Ampersand:
-				sb.appendString('&amp;');
-				break;
-
-			case CharCode.Null:
-				sb.appendString('&#00;');
-				break;
-
-			case CharCode.UTF8_BOM:
-			case CharCode.LINE_SEPARATOR:
-			case CharCode.PARAGRAPH_SEPARATOR:
-			case CharCode.NEXT_LINE:
-				sb.appendCharCode(0xFFFD);
-				break;
-
-			default:
-				if (strings.isFullWidthCharacter(charCode)) {
-					charWidth++;
-				}
-				if (charCode < 32) {
-					sb.appendCharCode(9216 + charCode);
-				} else {
-					sb.appendCharCode(charCode);
-				}
-		}
-
-		charOffset += producedCharacters;
-		visibleColumn += charWidth;
 	}
-	sb.appendString('</span></span>');
 
-	visibleColumns[lineContent.length] = visibleColumn;
+	const input = new RenderLineInput(
+		false,
+		fontInfo.canUseHalfwidthRightwardsArrow,
+		lineContent,
+		false,
+		strings.isBasicASCII(lineContent),
+		strings.containsRTL(lineContent),
+		0,
+		tokens,
+		lineDecorations,
+		tabSize,
+		0,
+		fontInfo.spaceWidth,
+		fontInfo.middotWidth,
+		fontInfo.wsmiddotWidth,
+		Number.MAX_SAFE_INTEGER,
+		'none',
+		false,
+		false,
+		null,
+		TextDirection.LTR,
+		10,
+		false,
+		true,
+		true
+	);
 
+	renderViewLine(input, sb);
 	sb.appendString('</div>');
 
-	return visibleColumns;
+	return new Array<number>(lineContent.length).fill(0);
 }
 
 function readLineBreaks(range: Range, lineDomNode: HTMLDivElement, lineContent: string): number[] | null {

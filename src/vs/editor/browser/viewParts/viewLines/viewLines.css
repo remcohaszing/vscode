@@ -71,8 +71,8 @@
 	position: absolute;
 }
 
-.monaco-editor .lines-content > .view-lines > .view-line > span > span[class="mtk1"] {
-	font-size: var(--editor-font-size);
+.monaco-dom-line-breaks-computer > span > span {
+	vertical-align: top;
 }
 
 .monaco-editor .mtkw {

@@ -7,8 +7,9 @@ import { assertNever } from '../../base/common/assert.js';
 import { WrappingIndent } from './config/editorOptions.js';
 import { FontInfo } from './config/fontInfo.js';
 import { Position } from './core/position.js';
-import { InjectedTextCursorStops, InjectedTextOptions, PositionAffinity } from './model.js';
+import { IModelDecoration, InjectedTextCursorStops, InjectedTextOptions, PositionAffinity } from './model.js';
 import { InlineClassName, LineInjectedText } from './textModelEvents.js';
+import { IViewLineTokens } from './tokens/lineTokens.js';
 
 /**
  * *input*:
@@ -332,6 +333,8 @@ export interface ILineBreaksComputerContext {
 	getLineContent(lineNumber: number): string;
 	getLineInjectedText(lineNumber: number): LineInjectedText[] | null;
 	getLineInlineClassNames(lineNumber: number): InlineClassName[] | null;
+	getLineCustomFontSizes(lineNumber: number): IModelDecoration[];
+	getLineTokens(lineNumber: number): IViewLineTokens;
 }
 
 export interface ILineBreaksComputerFactory {

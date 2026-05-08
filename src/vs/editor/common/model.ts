@@ -868,6 +868,8 @@ export interface ITextModel {
 	 */
 	getLineInlineClassNames(lineNumber: number, ownerId: number): InlineClassName[];
 
+	getFontDecorationsInLine(lineNumber: number, ownerId?: number): IModelDecoration[];
+
 	/**
 	 * Get the text length for a certain line.
 	 */

@@ -1868,6 +1868,12 @@ export class TextModel extends Disposable implements model.ITextModel, IDecorati
 		return InlineClassName.fromDecorations(result, this._buffer).filter(t => t.lineNumber === lineNumber);
 	}
 
+	public getFontDecorationsInLine(lineNumber: number, ownerId: number = 0): model.IModelDecoration[] {
+		const startOffset = this._buffer.getOffsetAt(lineNumber, 1);
+		const endOffset = startOffset + this._buffer.getLineLength(lineNumber);
+		return this._decorationsTree.getFontDecorationsInInterval(this, startOffset, endOffset, ownerId);
+	}
+
 	public getFontDecorationsInRange(range: IRange, ownerId: number = 0): model.IModelDecoration[] {
 		const startOffset = this._buffer.getOffsetAt(range.startLineNumber, range.startColumn);
 		const endOffset = this._buffer.getOffsetAt(range.endLineNumber, range.endColumn);

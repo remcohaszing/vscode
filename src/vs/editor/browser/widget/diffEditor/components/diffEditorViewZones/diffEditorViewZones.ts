@@ -173,7 +173,10 @@ export class DiffEditorViewZones extends Disposable {
 				},
 				getLineInlineClassNames(lineNumber: number) {
 					return null;
-				}
+				},
+				getLineCustomFontSizes(lineNumber: number) {
+					return [];
+				},
 			};
 			const deletedCodeLineBreaksComputer = !renderSideBySide ? this._editors.modified._getViewModel()?.createLineBreaksComputer(context) : undefined;
 			if (deletedCodeLineBreaksComputer) {
@@ -229,7 +232,8 @@ export class DiffEditorViewZones extends Disposable {
 							decorations.push(new InlineDecoration(
 								i.originalRange.delta(-(a.diff.original.startLineNumber - 1)),
 								diffDeleteDecoration.className!,
-								InlineDecorationType.Regular
+								InlineDecorationType.Regular,
+								1
 							));
 						}
 						const result = renderLines(source, renderOptions, decorations, deletedCodeDomNode);

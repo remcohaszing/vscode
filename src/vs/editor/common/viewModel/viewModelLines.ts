@@ -18,6 +18,7 @@ import { ConstantTimePrefixSumComputer } from '../model/prefixSumComputer.js';
 import { ViewLineData } from '../viewModel.js';
 import { ICoordinatesConverter, IdentityCoordinatesConverter } from '../coordinatesConverter.js';
 import { InlineClassName, LineInjectedText } from '../textModelEvents.js';
+import { IViewLineTokens } from '../tokens/lineTokens.js';
 
 export interface IViewModelLines extends IDisposable {
 	createCoordinatesConverter(): ICoordinatesConverter;
@@ -320,7 +321,13 @@ export class ViewModelLinesFromProjectedModel implements IViewModelLines {
 			},
 			getLineInlineClassNames: (lineNumber: number): InlineClassName[] => {
 				return this.model.getLineInlineClassNames(lineNumber, this._editorId);
-			}
+			},
+			getLineCustomFontSizes: (lineNumber: number): IModelDecoration[] => {
+				return this.model.getFontDecorationsInLine(lineNumber);
+			},
+			getLineTokens: (lineNumber: number): IViewLineTokens => {
+				return this.model.tokenization.getLineTokens(lineNumber);
+			},
 		};
 		return lineBreaksComputerFactory.createLineBreaksComputer(context, this.fontInfo, this.tabSize, this.wrappingColumn, this.wrappingIndent, this.wordBreak, this.wrapOnEscapedLineFeeds);
 	}

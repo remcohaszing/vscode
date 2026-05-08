@@ -20,7 +20,8 @@ export class InlineDecoration {
 	constructor(
 		public readonly range: Range,
 		public readonly inlineClassName: string,
-		public readonly type: InlineDecorationType
+		public readonly type: InlineDecorationType,
+		public readonly fontSize: number
 	) { }
 }
 
@@ -60,6 +61,13 @@ export interface IInlineModelDecorationsComputerContext {
 	 */
 	getModelDecorations(viewRange: Range, onlyMinimapDecorations: boolean, onlyMarginDecorations: boolean): IModelDecoration[];
 	getViewLineMaxColumn(viewLineNumber: number): number;
+}
+
+function parseFontSize(fontSize: string | null | undefined) {
+	if (fontSize === null || fontSize === undefined) {
+		return 1;
+	}
+	return parseFloat(fontSize);
 }
 
 export class InlineModelDecorationsComputer implements IInlineDecorationsComputer {
@@ -128,7 +136,7 @@ export class InlineModelDecorationsComputer implements IInlineDecorationsCompute
 			}
 
 			if (decorationOptions.inlineClassName) {
-				const inlineDecoration = new InlineDecoration(viewRange, decorationOptions.inlineClassName, decorationOptions.inlineClassNameAffectsLetterSpacing ? InlineDecorationType.RegularAffectingLetterSpacing : InlineDecorationType.Regular);
+				const inlineDecoration = new InlineDecoration(viewRange, decorationOptions.inlineClassName, decorationOptions.inlineClassNameAffectsLetterSpacing ? InlineDecorationType.RegularAffectingLetterSpacing : InlineDecorationType.Regular, parseFontSize(decorationOptions.fontSize));
 				const intersectedStartLineNumber = Math.max(startLineNumber, viewRange.startLineNumber);
 				const intersectedEndLineNumber = Math.min(endLineNumber, viewRange.endLineNumber);
 				for (let j = intersectedStartLineNumber; j <= intersectedEndLineNumber; j++) {
@@ -143,7 +151,8 @@ export class InlineModelDecorationsComputer implements IInlineDecorationsCompute
 					const inlineDecoration = new InlineDecoration(
 						new Range(viewRange.startLineNumber, viewRange.startColumn, viewRange.startLineNumber, viewRange.startColumn),
 						decorationOptions.beforeContentClassName,
-						InlineDecorationType.Before
+						InlineDecorationType.Before,
+						parseFontSize(decorationOptions.fontSize)
 					);
 					inlineDecorations[viewRange.startLineNumber - startLineNumber].push(inlineDecoration);
 					if (decorationOptions.affectsFont) {
@@ -156,7 +165,8 @@ export class InlineModelDecorationsComputer implements IInlineDecorationsCompute
 					const inlineDecoration = new InlineDecoration(
 						new Range(viewRange.endLineNumber, viewRange.endColumn, viewRange.endLineNumber, viewRange.endColumn),
 						decorationOptions.afterContentClassName,
-						InlineDecorationType.After
+						InlineDecorationType.After,
+						parseFontSize(decorationOptions.fontSize)
 					);
 					inlineDecorations[viewRange.endLineNumber - startLineNumber].push(inlineDecoration);
 					if (decorationOptions.affectsFont) {
@@ -285,7 +295,7 @@ export class InjectedTextInlineDecorationsComputer implements IInlineDecorations
 							const viewLineNumber = this.context.getBaseViewLineNumber(modelLineNumber) + outputLineIndex;
 							const range = new Range(viewLineNumber, start + 1, viewLineNumber, end + 1);
 							const type: InlineDecorationType = options.inlineClassNameAffectsLetterSpacing ? InlineDecorationType.RegularAffectingLetterSpacing : InlineDecorationType.Regular;
-							inlineDecorations.push(new InlineDecoration(range, options.inlineClassName, type));
+							inlineDecorations.push(new InlineDecoration(range, options.inlineClassName, type, 1));
 						}
 					}
 				}

@@ -138,6 +138,7 @@ function createLineBreaks(targetWindow: Window, context: ILineBreaksComputerCont
 	containerDomNode.style.position = 'absolute';
 	containerDomNode.style.top = '10000px';
 	containerDomNode.style.whiteSpace = 'pre-wrap';
+	containerDomNode.style.lineHeight = 'unset';
 	if (wordBreak === 'keepAll') {
 		// word-break: keep-all; overflow-wrap: anywhere
 		containerDomNode.style.wordBreak = 'keep-all';
@@ -156,7 +157,7 @@ function createLineBreaks(targetWindow: Window, context: ILineBreaksComputerCont
 	for (let i = 0; i < lineNumbers.length; i++) {
 		const lineNumber = lineNumbers[i];
 		const lineDomNode = lineDomNodes[i];
-		const breakOffsets: number[] | null = readLineBreaks(range, lineDomNode, renderLineContents[i]);
+		const breakOffsets: number[] | null = readLineBreaks(targetWindow, range, lineDomNode, renderLineContents[i]);
 		if (breakOffsets === null) {
 			result[i] = createEmptyLineBreakWithPossiblyInjectedText(lineNumber);
 			continue;
@@ -268,14 +269,14 @@ function renderLine(lineContent: string, initialVisibleColumn: number, tabSize: 
 	return new Array<number>(lineContent.length).fill(0);
 }
 
-function readLineBreaks(range: Range, lineDomNode: HTMLDivElement, lineContent: string): number[] | null {
+function readLineBreaks(targetWindow: Window, range: Range, lineDomNode: HTMLDivElement, lineContent: string): number[] | null {
 	if (lineContent.length <= 1) {
 		return null;
 	}
 
 	const breakOffsets: number[] = [];
 	let lineOffset = 0;
-	let previousMiddle: number | undefined;
+	let previousTop: number | undefined;
 
 	try {
 		for (const wrapper of lineDomNode.children) {
@@ -313,13 +314,13 @@ function readLineBreaks(range: Range, lineDomNode: HTMLDivElement, lineContent: 
 			lineOffset += chunkSize;
 		} else if (rects.length === 1) {
 			const rect = rects[0];
-			const middle = (rect.top + rect.bottom) / 2;
+			const top = rect.top;
 
-			if (previousMiddle !== undefined && Math.abs(previousMiddle - middle) > 0.5) {
+			if (previousTop !== undefined && Math.abs(previousTop - top) > 0.5 * targetWindow.devicePixelRatio) {
 				breakOffsets.push(lineOffset);
 			}
 
-			previousMiddle = middle;
+			previousTop = top;
 			lineOffset += chunkSize;
 		} else {
 			const middle = low + ((chunkSize / 2) | 0);

@@ -259,7 +259,6 @@ function renderLine(lineContent: string, initialVisibleColumn: number, tabSize: 
 		TextDirection.LTR,
 		10,
 		false,
-		true,
 		true
 	);
 

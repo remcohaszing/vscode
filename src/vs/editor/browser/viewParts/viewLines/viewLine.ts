@@ -135,7 +135,7 @@ export class ViewLine implements IVisibleLine {
 
 				if (startColumn < endColumn) {
 					if (isHighContrast(options.themeType)) {
-						actualInlineDecorations.push(new LineDecoration(startColumn, endColumn, 'inline-selected-text', InlineDecorationType.Regular, 1));
+						actualInlineDecorations.push(new LineDecoration(startColumn, endColumn, 'inline-selected-text', InlineDecorationType.Regular, 0));
 					}
 					if (renderWhitespace === 'selection') {
 						if (!selectionsOnLine) {

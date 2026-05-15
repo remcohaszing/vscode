@@ -548,7 +548,7 @@ function transformAndRemoveOverflowing(lineContent: string, lineContainsRTL: boo
 
 	// The faux indent part of the line should have no token type
 	if (fauxIndentLength > 0) {
-		result[resultLen++] = new LinePart(fauxIndentLength, '', 0, false, 1);
+		result[resultLen++] = new LinePart(fauxIndentLength, '', 0, false, 0);
 	}
 	let startOffset = fauxIndentLength;
 	for (let tokenIndex = 0, tokensLen = tokens.getCount(); tokenIndex < tokensLen; tokenIndex++) {
@@ -726,7 +726,7 @@ function isControlCharacter(charCode: number): boolean {
 
 function extractControlCharacters(lineContent: string, tokens: LinePart[]): LinePart[] {
 	const result: LinePart[] = [];
-	let lastLinePart: LinePart = new LinePart(0, '', 0, false, 1);
+	let lastLinePart: LinePart = new LinePart(0, '', 0, false, 0);
 	let charOffset = 0;
 	for (const token of tokens) {
 		const tokenEndIndex = token.endIndex;
@@ -853,10 +853,10 @@ function _applyRenderWhitespace(input: RenderLineInput, lineContent: string, len
 				if (generateLinePartForEachWhitespace) {
 					const lastEndIndex = (resultLen > 0 ? result[resultLen - 1].endIndex : fauxIndentLength);
 					for (let i = lastEndIndex + 1; i <= charIndex; i++) {
-						result[resultLen++] = new LinePart(i, 'mtkw', LinePartMetadata.IS_WHITESPACE, false, 1);
+						result[resultLen++] = new LinePart(i, 'mtkw', LinePartMetadata.IS_WHITESPACE, false, 0);
 					}
 				} else {
-					result[resultLen++] = new LinePart(charIndex, 'mtkw', LinePartMetadata.IS_WHITESPACE, false, 1);
+					result[resultLen++] = new LinePart(charIndex, 'mtkw', LinePartMetadata.IS_WHITESPACE, false, 0);
 				}
 				tmpIndent = tmpIndent % tabSize;
 			}
@@ -948,7 +948,7 @@ function _applyInlineDecorations(lineContent: string, len: number, tokens: LineP
 
 			if (lineDecoration.startOffset > lastResultEndIndex) {
 				lastResultEndIndex = lineDecoration.startOffset;
-				result[resultLen++] = new LinePart(lastResultEndIndex, tokenType, tokenMetadata, tokenContainsRTL, token.fontSize);
+				result[resultLen++] = new LinePart(lastResultEndIndex, tokenType, tokenMetadata, tokenContainsRTL, tokenFontSize);
 			}
 
 			if (lineDecoration.endOffset + 1 <= tokenEndIndex) {

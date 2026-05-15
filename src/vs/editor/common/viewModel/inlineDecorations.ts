@@ -65,7 +65,7 @@ export interface IInlineModelDecorationsComputerContext {
 
 function parseFontSize(fontSize: string | null | undefined) {
 	if (fontSize === null || fontSize === undefined) {
-		return 1;
+		return 0;
 	}
 	return parseFloat(fontSize);
 }

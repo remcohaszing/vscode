@@ -342,6 +342,10 @@ export class HitTestContext {
 		return this._context.viewLayout.isInBottomPadding(mouseVerticalOffset);
 	}
 
+	public getLineHeightForLineNumber(lineNumber: number): number {
+		return this._context.viewLayout.getLineHeightForLineNumber(lineNumber);
+	}
+
 	public getVerticalOffsetForLineNumber(lineNumber: number): number {
 		return this._context.viewLayout.getVerticalOffsetForLineNumber(lineNumber);
 	}
@@ -956,7 +960,7 @@ export class MouseTargetFactory {
 		// so try to adjust the `hity` below so that it lands in the center of a line
 		const lineNumber = ctx.getLineNumberAtVerticalOffset(request.mouseVerticalOffset);
 		const lineStartVerticalOffset = ctx.getVerticalOffsetForLineNumber(lineNumber);
-		const lineEndVerticalOffset = lineStartVerticalOffset + ctx.lineHeight;
+		const lineEndVerticalOffset = lineStartVerticalOffset + ctx.getLineHeightForLineNumber(lineNumber);
 
 		const isBelowLastLine = (
 			lineNumber === ctx.viewModel.getLineCount()

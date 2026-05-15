@@ -383,7 +383,8 @@ function computeGhostTextViewData(ghostText: GhostText | GhostTextReplacement, t
 					lastLine.content.length + 1,
 					lastLine.content.length + 1 + ghLines[0].line.length,
 					className,
-					InlineDecorationType.Regular
+					InlineDecorationType.Regular,
+					1
 				));
 			}
 			lastLine.content += ghLines[0].line;
@@ -397,7 +398,8 @@ function computeGhostTextViewData(ghostText: GhostText | GhostTextReplacement, t
 					1,
 					ghLine.line.length + 1,
 					className,
-					InlineDecorationType.Regular
+					InlineDecorationType.Regular,
+					1
 				), ...ghLine.lineDecorations] : [...ghLine.lineDecorations]
 			});
 		}

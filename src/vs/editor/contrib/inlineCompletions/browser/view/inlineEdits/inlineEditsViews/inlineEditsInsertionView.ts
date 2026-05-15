@@ -111,7 +111,8 @@ export class InlineEditsInsertionView extends Disposable implements IInlineEdits
 		const inlineDecorations = modifiedLines.map((line, i) => new InlineDecoration(
 			new Range(i + 1, i === 0 ? 1 : prefixTrim.prefixTrim + 1, i + 1, line.length + 1),
 			'modified-background',
-			InlineDecorationType.Regular
+			InlineDecorationType.Regular,
+			1
 		));
 
 		return new GhostText(state.lineNumber, [new GhostTextPart(state.column, state.text, false, inlineDecorations)]);

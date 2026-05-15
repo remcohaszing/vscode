@@ -94,7 +94,7 @@ export class InlineEditsLineReplacementView extends Disposable implements IInlin
 				const decorations = [];
 				for (const modified of modifiedBubbles.filter(b => b.startLineNumber === lineNumber)) {
 					const validatedEndColumn = Math.min(modified.endColumn, modLine.length + 1);
-					decorations.push(new InlineDecoration(new Range(1, modified.startColumn, 1, validatedEndColumn), 'inlineCompletions-modified-bubble', InlineDecorationType.Regular));
+					decorations.push(new InlineDecoration(new Range(1, modified.startColumn, 1, validatedEndColumn), 'inlineCompletions-modified-bubble', InlineDecorationType.Regular, 1));
 				}
 
 				// TODO: All lines should be rendered at once for one dom element

@@ -177,6 +177,9 @@ export class DiffEditorViewZones extends Disposable {
 				getLineCustomFontSizes(lineNumber: number) {
 					return [];
 				},
+				getLineTokens: (lineNumber: number) => {
+					return this._editors.original.getModel()!.tokenization.getLineTokens(lineNumber);
+				},
 			};
 			const deletedCodeLineBreaksComputer = !renderSideBySide ? this._editors.modified._getViewModel()?.createLineBreaksComputer(context) : undefined;
 			if (deletedCodeLineBreaksComputer) {

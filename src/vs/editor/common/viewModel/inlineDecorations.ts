@@ -120,11 +120,13 @@ export class InlineModelDecorationsComputer implements IInlineDecorationsCompute
 			decorationsInViewport[decorationsInViewportLen++] = viewModelDecoration;
 
 			if (decorationOptions.fontSize !== null && decorationOptions.fontSize !== undefined) {
+				const inlineDecoration = new InlineDecoration(viewRange, '', decorationOptions.inlineClassNameAffectsLetterSpacing ? InlineDecorationType.RegularAffectingLetterSpacing : InlineDecorationType.Regular, parseFontSize(decorationOptions.fontSize));
 				const fontSize = Number(decorationOptions.fontSize);
 				const intersectedStartLineNumber = Math.max(startLineNumber, viewRange.startLineNumber);
 				const intersectedEndLineNumber = Math.min(endLineNumber, viewRange.endLineNumber);
 				if (Number.isFinite(fontSize)) {
 					for (let j = intersectedStartLineNumber; j <= intersectedEndLineNumber; j++) {
+						inlineDecorations[j - startLineNumber].push(inlineDecoration);
 						const characterSizes = maxFontSizes[j - startLineNumber];
 						const startColumn = j === intersectedStartLineNumber ? viewRange.startColumn : 1;
 						const endColumn = j === intersectedEndLineNumber ? viewRange.endColumn : characterSizes.length;

@@ -136,22 +136,16 @@ function registerDecoratorButton(id: string, options: monaco.editor.IModelDecora
 }
 
 registerDecoratorButton('small-inline', {
-	inlineClassName: `small-inline`,
-	inlineClassNameAffectsLetterSpacing: true,
 	fontSize: '0.3',
 	lineHeight: 0.3
 });
 
 registerDecoratorButton('big-inline', {
-	inlineClassName: `big-inline`,
-	inlineClassNameAffectsLetterSpacing: true,
 	fontSize: '2',
 	lineHeight: 2
 });
 
 registerDecoratorButton('big-whole-line', {
-	inlineClassName: `big-whole-line`,
-	inlineClassNameAffectsLetterSpacing: true,
 	isWholeLine: true,
 	fontSize: '1.5',
 	lineHeight: 1.5

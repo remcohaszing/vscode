@@ -26,6 +26,7 @@ export class LineDecoration {
 			&& a.endColumn === b.endColumn
 			&& a.className === b.className
 			&& a.type === b.type
+			&& a.fontSize === b.fontSize
 		);
 	}
 

@@ -180,6 +180,9 @@ export class DiffEditorViewZones extends Disposable {
 				getLineTokens: (lineNumber: number) => {
 					return this._editors.original.getModel()!.tokenization.getLineTokens(lineNumber);
 				},
+				getLineMaxColumn: (lineNumber: number) => {
+					return this._editors.original.getModel()!.getLineMaxColumn(lineNumber);
+				},
 			};
 			const deletedCodeLineBreaksComputer = !renderSideBySide ? this._editors.modified._getViewModel()?.createLineBreaksComputer(context) : undefined;
 			if (deletedCodeLineBreaksComputer) {

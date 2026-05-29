@@ -126,7 +126,7 @@ function createLineBreaks(targetWindow: Window, context: ILineBreaksComputerCont
 		const renderLineContent = lineContent.substr(firstNonWhitespaceIndex);
 		const tokens = context.getLineTokens(lineNumber);
 		const customFontSizes = context.getLineCustomFontSizes(lineNumber);
-		allVisibleColumns[i] = renderLine(renderLineContent, wrappedTextIndentLength, tabSize, width, sb, additionalIndentLength, injectedTextsPerLine, inlineClassNamesPerLine, customFontSizes, fontInfo, tokens);
+		allVisibleColumns[i] = renderLine(lineNumber, renderLineContent, wrappedTextIndentLength, tabSize, width, sb, additionalIndentLength, injectedTextsPerLine, inlineClassNamesPerLine, customFontSizes, fontInfo, tokens, context.getLineMaxColumn(lineNumber));
 		firstNonWhitespaceIndices[i] = firstNonWhitespaceIndex;
 		wrappedTextIndentLengths[i] = wrappedTextIndentLength;
 		renderLineContents[i] = renderLineContent;
@@ -197,7 +197,7 @@ function createLineBreaks(targetWindow: Window, context: ILineBreaksComputerCont
 	return result;
 }
 
-function renderLine(lineContent: string, initialVisibleColumn: number, tabSize: number, width: number, sb: StringBuilder, wrappingIndentLength: number, lineInjectedText: LineInjectedText[] | null, inlineClassNames: InlineClassName[] | null, customFontSizes: IModelDecoration[], fontInfo: FontInfo, tokens: IViewLineTokens): number[] {
+function renderLine(lineNumber: number, lineContent: string, initialVisibleColumn: number, tabSize: number, width: number, sb: StringBuilder, wrappingIndentLength: number, lineInjectedText: LineInjectedText[] | null, inlineClassNames: InlineClassName[] | null, customFontSizes: IModelDecoration[], fontInfo: FontInfo, tokens: IViewLineTokens, maxColumn: number): number[] {
 	sb.appendString('<div class="monaco-dom-line-breaks-computer" style="');
 	if (wrappingIndentLength !== 0) {
 		const hangingOffset = String(wrappingIndentLength);
@@ -227,9 +227,10 @@ function renderLine(lineContent: string, initialVisibleColumn: number, tabSize: 
 
 	if (customFontSizes) {
 		for (const f of customFontSizes) {
+			const range = f.range;
 			lineDecorations.push(new LineDecoration(
-				f.range.startColumn,
-				f.range.endColumn,
+				lineNumber < range.startLineNumber ? 1 : range.startColumn,
+				lineNumber > range.endColumn ? maxColumn : f.range.endColumn,
 				'',
 				InlineDecorationType.RegularAffectingLetterSpacing,
 				Number(f.options.fontSize)

@@ -328,6 +328,9 @@ export class ViewModelLinesFromProjectedModel implements IViewModelLines {
 			getLineTokens: (lineNumber: number): IViewLineTokens => {
 				return this.model.tokenization.getLineTokens(lineNumber);
 			},
+			getLineMaxColumn: (lineNumber: number): number => {
+				return this.model.getLineMaxColumn(lineNumber);
+			}
 		};
 		return lineBreaksComputerFactory.createLineBreaksComputer(context, this.fontInfo, this.tabSize, this.wrappingColumn, this.wrappingIndent, this.wordBreak, this.wrapOnEscapedLineFeeds);
 	}

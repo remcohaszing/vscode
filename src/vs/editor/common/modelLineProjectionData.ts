@@ -335,6 +335,7 @@ export interface ILineBreaksComputerContext {
 	getLineInlineClassNames(lineNumber: number): InlineClassName[] | null;
 	getLineCustomFontSizes(lineNumber: number): IModelDecoration[];
 	getLineTokens(lineNumber: number): IViewLineTokens;
+	getLineMaxColumn(lineNumber: number): number;
 }
 
 export interface ILineBreaksComputerFactory {

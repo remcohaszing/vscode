@@ -1035,7 +1035,6 @@ function _renderLine(input: ResolvedRenderLineInput, sb: StringBuilder): RenderL
 		}
 		sb.appendString('font-size:calc(var(--editor-font-size)*');
 		sb.appendString((fontSize || 1).toString());
-		sb.appendString(');');
 		sb.appendString(');" class="');
 		sb.appendString(partRendersWhitespaceWithWidth ? 'mtkz' : partType);
 		sb.appendASCIICharCode(CharCode.DoubleQuote);

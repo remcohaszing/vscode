@@ -229,8 +229,8 @@ function renderLine(lineNumber: number, lineContent: string, initialVisibleColum
 		for (const f of customFontSizes) {
 			const range = f.range;
 			lineDecorations.push(new LineDecoration(
-				lineNumber < range.startLineNumber ? 1 : range.startColumn,
-				lineNumber > range.endColumn ? maxColumn : f.range.endColumn,
+				lineNumber > range.startLineNumber ? 1 : range.startColumn,
+				lineNumber < range.endLineNumber ? maxColumn : range.endColumn,
 				'',
 				InlineDecorationType.RegularAffectingLetterSpacing,
 				Number(f.options.fontSize)

@@ -2028,6 +2028,9 @@ export class TextModel extends Disposable implements model.ITextModel, IDecorati
 						if (node.options.affectsFont) {
 							const nodeRange = this._decorationsTree.getNodeRange(this, node);
 							this._onDidChangeDecorations.recordLineAffectedByFontChange(ownerId, decorationId, nodeRange.startLineNumber);
+							for (let lineNumber = nodeRange.startLineNumber; lineNumber <= nodeRange.endLineNumber; lineNumber++) {
+								this._onDidChangeDecorations.recordLineAffectedByInjectedText(lineNumber);
+							}
 						}
 						if (node.options.inlineClassNameAffectsLetterSpacing) {
 							const nodeRange = this._decorationsTree.getNodeRange(this, node);

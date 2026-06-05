@@ -43,6 +43,7 @@ export class DOMLineBreaksComputerFactory implements ILineBreaksComputerFactory 
 	}
 }
 
+let oldContainer: HTMLDivElement;
 function createLineBreaks(targetWindow: Window, context: ILineBreaksComputerContext, lineNumbers: number[], fontInfo: FontInfo, tabSize: number, firstLineBreakColumn: number, wrappingIndent: WrappingIndent, wordBreak: 'normal' | 'keepAll'): (ModelLineProjectionData | null)[] {
 	function createEmptyLineBreakWithPossiblyInjectedText(lineNumber: number): ModelLineProjectionData | null {
 		const injectedTexts = context.getLineInjectedText(lineNumber);
@@ -193,7 +194,10 @@ function createLineBreaks(targetWindow: Window, context: ILineBreaksComputerCont
 		result[i] = new ModelLineProjectionData(injectionOffsets, injectionOptions, breakOffsets, breakOffsetsVisibleColumn, wrappedTextIndentLength);
 	}
 
-	containerDomNode.remove();
+	containerDomNode.style.background = 'red';
+	containerDomNode.style.top = '500px';
+	oldContainer?.remove();
+	oldContainer = containerDomNode;
 	return result;
 }
 

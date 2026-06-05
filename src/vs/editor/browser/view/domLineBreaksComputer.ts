@@ -321,7 +321,7 @@ function readLineBreaks(targetWindow: Window, range: Range, lineDomNode: HTMLDiv
 			const rect = rects[0];
 			const top = rect.top;
 
-			if (previousTop !== undefined && Math.abs(previousTop - top) > 1 * targetWindow.devicePixelRatio) {
+			if (previousTop !== undefined && Math.abs(previousTop - top) > 2 * targetWindow.devicePixelRatio) {
 				breakOffsets.push(lineOffset);
 			}
 

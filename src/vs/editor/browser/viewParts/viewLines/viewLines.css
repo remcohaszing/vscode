@@ -72,7 +72,7 @@
 }
 
 .monaco-dom-line-breaks-computer > span > span {
-	vertical-align: top;
+	vertical-align: middle;
 }
 
 .monaco-editor .mtkw {

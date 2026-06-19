@@ -277,7 +277,7 @@ function readLineBreaks(targetWindow: Window, range: Range, lineDomNode: HTMLDiv
 
 	const breakOffsets: number[] = [];
 	let lineOffset = 0;
-	let previousTop: number | undefined;
+	let previousMiddle: number | undefined;
 
 	try {
 		for (const wrapper of lineDomNode.children) {
@@ -315,13 +315,13 @@ function readLineBreaks(targetWindow: Window, range: Range, lineDomNode: HTMLDiv
 			lineOffset += chunkSize;
 		} else if (rects.length === 1) {
 			const rect = rects[0];
-			const top = rect.top;
+			const middle = rect.top + rect.height / 2;
 
-			if (previousTop !== undefined && Math.abs(previousTop - top) > 2 * targetWindow.devicePixelRatio) {
+			if (previousMiddle !== undefined && Math.abs(previousMiddle - middle) > 2 * targetWindow.devicePixelRatio) {
 				breakOffsets.push(lineOffset);
 			}
 
-			previousTop = top;
+			previousMiddle = middle;
 			lineOffset += chunkSize;
 		} else {
 			const middle = low + ((chunkSize / 2) | 0);

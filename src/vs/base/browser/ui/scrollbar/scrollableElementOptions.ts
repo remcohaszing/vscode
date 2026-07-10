@@ -3,7 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ScrollbarVisibility } from '../../../common/scrollable.js';
+import { ScrollbarVisibility, VerticalScrollbarPosition } from '../../../common/scrollable.js';
 
 export interface ScrollableElementCreationOptions {
 	/**
@@ -124,6 +124,11 @@ export interface ScrollableElementCreationOptions {
 	 */
 	verticalHasArrows?: boolean;
 	/**
+	 * Control the position of the vertical scrollbar.
+	 * Defaults to `right`
+	 */
+	verticalPosition?: VerticalScrollbarPosition;
+	/**
 	 * Scroll gutter clicks move by page vs. jump to position.
 	 * Defaults to false.
 	 */
@@ -166,5 +171,6 @@ export interface ScrollableElementResolvedOptions {
 	verticalScrollbarSize: number;
 	verticalSliderSize: number;
 	verticalHasArrows: boolean;
+	verticalPosition: VerticalScrollbarPosition;
 	scrollByPage: boolean;
 }

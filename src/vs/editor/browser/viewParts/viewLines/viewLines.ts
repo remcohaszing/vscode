@@ -27,6 +27,7 @@ import { ViewContext } from '../../../common/viewModel/viewContext.js';
 import { ViewLineOptions } from './viewLineOptions.js';
 import type { ViewGpuContext } from '../../gpu/viewGpuContext.js';
 import { TextDirection } from '../../../common/model.js';
+import { VerticalScrollbarPosition } from '../../../../base/common/scrollable.js';
 
 class LastRenderedData {
 
@@ -127,6 +128,8 @@ export class ViewLines extends ViewPart implements IViewLines {
 	private _stickyScrollEnabled: boolean;
 	private _maxNumberStickyLines: number;
 
+	private _viewLinesOffset: number;
+
 	constructor(context: ViewContext, viewGpuContext: ViewGpuContext | undefined, linesContent: FastDomNode<HTMLElement>) {
 		super(context);
 
@@ -134,6 +137,7 @@ export class ViewLines extends ViewPart implements IViewLines {
 		const options = this._context.configuration.options;
 		const fontInfo = options.get(EditorOption.fontInfo);
 		const wrappingInfo = options.get(EditorOption.wrappingInfo);
+		const scrollbar = options.get(EditorOption.scrollbar);
 
 		this._lineHeight = options.get(EditorOption.lineHeight);
 		this._typicalHalfwidthCharacterWidth = fontInfo.typicalHalfwidthCharacterWidth;
@@ -171,6 +175,9 @@ export class ViewLines extends ViewPart implements IViewLines {
 		// sticky scroll widget
 		this._stickyScrollEnabled = options.get(EditorOption.stickyScroll).enabled;
 		this._maxNumberStickyLines = options.get(EditorOption.stickyScroll).maxLineCount;
+		this._viewLinesOffset = scrollbar.verticalPosition === VerticalScrollbarPosition.Left
+			? scrollbar.verticalScrollbarSize
+			: 0;
 	}
 
 	public override dispose(): void {
@@ -673,7 +680,7 @@ export class ViewLines extends ViewPart implements IViewLines {
 		this._linesContent.setContain('strict');
 		const adjustedScrollTop = this._context.viewLayout.getCurrentScrollTop() - viewportData.bigNumbersDelta;
 		this._linesContent.setTop(-adjustedScrollTop);
-		this._linesContent.setLeft(-this._context.viewLayout.getCurrentScrollLeft());
+		this._linesContent.setLeft(this._viewLinesOffset - this._context.viewLayout.getCurrentScrollLeft());
 	}
 
 	// --- width

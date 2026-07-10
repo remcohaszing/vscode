@@ -8,7 +8,7 @@ import { IMarkdownString } from '../../../base/common/htmlContent.js';
 import { IJSONSchema } from '../../../base/common/jsonSchema.js';
 import * as objects from '../../../base/common/objects.js';
 import * as platform from '../../../base/common/platform.js';
-import { ScrollbarVisibility } from '../../../base/common/scrollable.js';
+import { ScrollbarVisibility, VerticalScrollbarPosition } from '../../../base/common/scrollable.js';
 import { Constants } from '../../../base/common/uint.js';
 import { EDITOR_FONT_DEFAULTS, FONT_VARIATION_OFF, FONT_VARIATION_TRANSLATE, FontInfo } from './fontInfo.js';
 import { EDITOR_MODEL_DEFAULTS } from '../core/misc/textModelDefaults.js';
@@ -2439,9 +2439,13 @@ export interface OverviewRulerPosition {
 	 */
 	readonly top: number;
 	/**
+	 * Left position for the overview ruler
+	 */
+	readonly left: number | undefined;
+	/**
 	 * Right position for the overview ruler
 	 */
-	readonly right: number;
+	readonly right: number | undefined;
 }
 
 export const enum RenderMinimap {
@@ -2654,7 +2658,8 @@ export class EditorLayoutInfoComputer extends ComputedEditorOption<EditorOption.
 				top: 0,
 				width: 0,
 				height: 0,
-				right: 0
+				right: 0,
+				left: undefined
 			}
 		});
 	}
@@ -2897,6 +2902,7 @@ export class EditorLayoutInfoComputer extends ComputedEditorOption<EditorOption.
 
 		const scrollbar = options.get(EditorOption.scrollbar);
 		const verticalScrollbarWidth = scrollbar.verticalScrollbarSize;
+		const verticalScrollbarPosition = scrollbar.verticalPosition;
 		const verticalScrollbarHasArrows = scrollbar.verticalHasArrows;
 		const scrollbarArrowSize = scrollbar.arrowSize;
 		const horizontalScrollbarHeight = scrollbar.horizontalScrollbarSize;
@@ -3011,7 +3017,8 @@ export class EditorLayoutInfoComputer extends ComputedEditorOption<EditorOption.
 				top: verticalArrowSize,
 				width: verticalScrollbarWidth,
 				height: (outerHeight - 2 * verticalArrowSize),
-				right: 0
+				left: verticalScrollbarPosition === VerticalScrollbarPosition.Left ? 0 : undefined,
+				right: verticalScrollbarPosition === VerticalScrollbarPosition.Left ? undefined : 0
 			}
 		};
 	}
@@ -4100,6 +4107,11 @@ export interface IEditorScrollbarOptions {
 	 */
 	horizontalScrollbarSize?: number;
 	/**
+	 * Position of the vertical scrollbar.
+	 * Defaults to right.
+	 */
+	verticalPosition?: 'left' | 'right';
+	/**
 	 * Width in pixels for the vertical scrollbar.
 	 * Defaults to 14 (px).
 	 */
@@ -4140,6 +4152,7 @@ export interface InternalEditorScrollbarOptions {
 	readonly alwaysConsumeMouseWheel: boolean;
 	readonly horizontalScrollbarSize: number;
 	readonly horizontalSliderSize: number;
+	readonly verticalPosition: VerticalScrollbarPosition;
 	readonly verticalScrollbarSize: number;
 	readonly verticalSliderSize: number;
 	readonly scrollByPage: boolean;
@@ -4169,6 +4182,7 @@ class EditorScrollbar extends BaseEditorOption<EditorOption.scrollbar, IEditorSc
 			horizontalHasArrows: false,
 			horizontalScrollbarSize: 12,
 			horizontalSliderSize: 12,
+			verticalPosition: VerticalScrollbarPosition.Right,
 			verticalScrollbarSize: 14,
 			verticalSliderSize: 14,
 			handleMouseWheel: true,
@@ -4243,6 +4257,7 @@ class EditorScrollbar extends BaseEditorOption<EditorOption.scrollbar, IEditorSc
 			alwaysConsumeMouseWheel: boolean(input.alwaysConsumeMouseWheel, this.defaultValue.alwaysConsumeMouseWheel),
 			horizontalScrollbarSize: horizontalScrollbarSize,
 			horizontalSliderSize: EditorIntOption.clampedInt(input.horizontalSliderSize, horizontalScrollbarSize, 0, 1000),
+			verticalPosition: input.verticalPosition === 'left' ? VerticalScrollbarPosition.Left : VerticalScrollbarPosition.Right,
 			verticalScrollbarSize: verticalScrollbarSize,
 			verticalSliderSize: EditorIntOption.clampedInt(input.verticalSliderSize, verticalScrollbarSize, 0, 1000),
 			scrollByPage: boolean(input.scrollByPage, this.defaultValue.scrollByPage),

@@ -9,11 +9,12 @@ import { ScrollableElementResolvedOptions } from './scrollableElementOptions.js'
 import { ARROW_IMG_SIZE } from './scrollbarArrow.js';
 import { ScrollbarState } from './scrollbarState.js';
 import { Codicon } from '../../../common/codicons.js';
-import { INewScrollPosition, Scrollable, ScrollbarVisibility, ScrollEvent } from '../../../common/scrollable.js';
+import { INewScrollPosition, Scrollable, ScrollbarVisibility, ScrollEvent, VerticalScrollbarPosition } from '../../../common/scrollable.js';
 
 
 
 export class VerticalScrollbar extends AbstractScrollbar {
+	private _position: VerticalScrollbarPosition;
 
 	constructor(scrollable: Scrollable, options: ScrollableElementResolvedOptions, host: ScrollbarHost) {
 		const scrollDimensions = scrollable.getScrollDimensions();
@@ -36,6 +37,7 @@ export class VerticalScrollbar extends AbstractScrollbar {
 			scrollByPage: options.scrollByPage
 		});
 
+		this._position = options.verticalPosition;
 		if (options.verticalHasArrows) {
 			const arrowDelta = (options.arrowSize - ARROW_IMG_SIZE) / 2;
 			const scrollbarDelta = (options.verticalScrollbarSize - ARROW_IMG_SIZE) / 2;
@@ -76,7 +78,11 @@ export class VerticalScrollbar extends AbstractScrollbar {
 	protected _renderDomNode(largeSize: number, smallSize: number): void {
 		this.domNode.setWidth(smallSize);
 		this.domNode.setHeight(largeSize);
-		this.domNode.setRight(0);
+		if (this._position === VerticalScrollbarPosition.Left) {
+			this.domNode.setLeft(0);
+		} else {
+			this.domNode.setRight(0);
+		}
 		this.domNode.setTop(0);
 	}
 
@@ -113,6 +119,7 @@ export class VerticalScrollbar extends AbstractScrollbar {
 		this._scrollbarState.setOppositeScrollbarSize(0);
 		this._visibilityController.setVisibility(options.vertical);
 		this._scrollByPage = options.scrollByPage;
+		this._position = options.verticalPosition;
 	}
 
 }

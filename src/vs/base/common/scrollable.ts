@@ -6,6 +6,11 @@
 import { Emitter, Event } from './event.js';
 import { Disposable, IDisposable } from './lifecycle.js';
 
+export const enum VerticalScrollbarPosition {
+	Left = 1,
+	Right = 2
+}
+
 export const enum ScrollbarVisibility {
 	Auto = 1,
 	Hidden = 2,

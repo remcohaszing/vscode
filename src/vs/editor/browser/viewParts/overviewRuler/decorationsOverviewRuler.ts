@@ -37,7 +37,8 @@ class Settings {
 	public readonly backgroundColor: Color | null;
 
 	public readonly top: number;
-	public readonly right: number;
+	public readonly left: number | undefined;
+	public readonly right: number | undefined;
 	public readonly domWidth: number;
 	public readonly domHeight: number;
 	public readonly canvasWidth: number;
@@ -83,6 +84,7 @@ class Settings {
 		const layoutInfo = options.get(EditorOption.layoutInfo);
 		const position = layoutInfo.overviewRuler;
 		this.top = position.top;
+		this.left = position.left;
 		this.right = position.right;
 		this.domWidth = position.width;
 		this.domHeight = position.height;
@@ -201,6 +203,7 @@ class Settings {
 			&& this.themeType === other.themeType
 			&& Color.equals(this.backgroundColor, other.backgroundColor)
 			&& this.top === other.top
+			&& this.left === other.left
 			&& this.right === other.right
 			&& this.domWidth === other.domWidth
 			&& this.domHeight === other.domHeight
@@ -280,7 +283,12 @@ export class DecorationsOverviewRuler extends ViewPart {
 		this._settings = newSettings;
 
 		this._domNode.setTop(this._settings.top);
-		this._domNode.setRight(this._settings.right);
+		if (this._settings.left !== undefined) {
+			this._domNode.setLeft(this._settings.left);
+		}
+		if (this._settings.right !== undefined) {
+			this._domNode.setRight(this._settings.right);
+		}
 		this._domNode.setWidth(this._settings.domWidth);
 		this._domNode.setHeight(this._settings.domHeight);
 		this._domNode.domNode.width = this._settings.canvasWidth;

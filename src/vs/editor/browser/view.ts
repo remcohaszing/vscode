@@ -182,6 +182,11 @@ export class View extends ViewEventHandler {
 		this._linesContent = createFastDomNode(document.createElement('div'));
 		this._linesContent.setClassName('lines-content' + ' monaco-editor-background');
 		this._linesContent.setPosition('absolute');
+		const setLeft = this._linesContent.setLeft;
+		this._linesContent.setLeft = function (...args) {
+			// console.trace('setLeft');
+			setLeft.apply(this, args);
+		};
 
 		this.domNode = createFastDomNode(document.createElement('div'));
 		this.domNode.setClassName(this._getEditorClassName());

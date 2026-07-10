@@ -193,6 +193,10 @@ export class ViewCursor {
 
 			let left = visibleRange.left;
 			let paddingLeft = 0;
+			if (this._context.viewModel.getTextDirection(position.lineNumber)) {
+				left -= width;
+			}
+
 			if (width >= 2 && left >= 1) {
 				// shift the cursor a bit between the characters
 				paddingLeft = 1;

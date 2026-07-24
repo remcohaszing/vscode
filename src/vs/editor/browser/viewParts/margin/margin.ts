@@ -23,7 +23,8 @@ export class Margin extends ViewPart {
 
 	private readonly _domNode: FastDomNode<HTMLElement>;
 	private _canUseLayerHinting: boolean;
-	private _contentLeft: number;
+	private _marginLeft: number;
+	private _marginWidth: number;
 	private _glyphMarginLeft: number;
 	private _glyphMarginWidth: number;
 	private _glyphMarginBackgroundDomNode: FastDomNode<HTMLElement>;
@@ -34,7 +35,8 @@ export class Margin extends ViewPart {
 		const layoutInfo = options.get(EditorOption.layoutInfo);
 
 		this._canUseLayerHinting = !options.get(EditorOption.disableLayerHinting);
-		this._contentLeft = layoutInfo.contentLeft;
+		this._marginLeft = layoutInfo.marginLeft;
+		this._marginWidth = layoutInfo.marginWidth;
 		this._glyphMarginLeft = layoutInfo.glyphMarginLeft;
 		this._glyphMarginWidth = layoutInfo.glyphMarginWidth;
 
@@ -65,7 +67,8 @@ export class Margin extends ViewPart {
 		const layoutInfo = options.get(EditorOption.layoutInfo);
 
 		this._canUseLayerHinting = !options.get(EditorOption.disableLayerHinting);
-		this._contentLeft = layoutInfo.contentLeft;
+		this._marginLeft = layoutInfo.marginLeft;
+		this._marginWidth = layoutInfo.marginWidth;
 		this._glyphMarginLeft = layoutInfo.glyphMarginLeft;
 		this._glyphMarginWidth = layoutInfo.glyphMarginWidth;
 
@@ -89,7 +92,8 @@ export class Margin extends ViewPart {
 
 		const height = Math.min(ctx.scrollHeight, 1000000);
 		this._domNode.setHeight(height);
-		this._domNode.setWidth(this._contentLeft);
+		this._domNode.setWidth(this._marginWidth);
+		this._domNode.setLeft(this._marginLeft);
 
 		this._glyphMarginBackgroundDomNode.setLeft(this._glyphMarginLeft);
 		this._glyphMarginBackgroundDomNode.setWidth(this._glyphMarginWidth);

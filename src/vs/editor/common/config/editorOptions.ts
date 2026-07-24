@@ -208,6 +208,7 @@ export interface IEditorOptions {
 	 * Control the behavior of sticky scroll options
 	 */
 	stickyScroll?: IEditorStickyScrollOptions;
+	margin?: IEditorMarginOptions;
 	/**
 	 * Control the behavior and rendering of the minimap.
 	 */
@@ -2510,6 +2511,15 @@ export interface EditorLayoutInfo {
 	readonly contentWidth: number;
 
 	/**
+	 * Left position for the margin
+	 */
+	readonly marginLeft: number;
+	/**
+	 * The width of the margin
+	 */
+	readonly marginWidth: number;
+
+	/**
 	 * Layout information for the minimap
 	 */
 	readonly minimap: EditorMinimapLayoutInfo;
@@ -2635,6 +2645,8 @@ export class EditorLayoutInfoComputer extends ComputedEditorOption<EditorOption.
 			decorationsWidth: 0,
 			contentLeft: 0,
 			contentWidth: 0,
+			marginLeft: 0,
+			marginWidth: 0,
 			minimap: {
 				renderMinimap: RenderMinimap.None,
 				minimapLeft: 0,
@@ -2899,6 +2911,7 @@ export class EditorLayoutInfoComputer extends ComputedEditorOption<EditorOption.
 		const scrollBeyondLastLine = options.get(EditorOption.scrollBeyondLastLine);
 		const padding = options.get(EditorOption.padding);
 		const minimap = options.get(EditorOption.minimap);
+		const marginSide = options.get(EditorOption.margin).side;
 
 		const scrollbar = options.get(EditorOption.scrollbar);
 		const verticalScrollbarWidth = scrollbar.verticalScrollbarSize;
@@ -2929,7 +2942,9 @@ export class EditorLayoutInfoComputer extends ComputedEditorOption<EditorOption.
 		let glyphMarginLeft = 0;
 		let lineNumbersLeft = glyphMarginLeft + glyphMarginWidth;
 		let decorationsLeft = lineNumbersLeft + lineNumbersWidth;
-		let contentLeft = decorationsLeft + lineDecorationsWidth;
+		let marginLeft = 0;
+		const marginWidth = decorationsLeft + lineDecorationsWidth;
+		let contentLeft = 0;
 
 		const remainingWidth = outerWidth - glyphMarginWidth - lineNumbersWidth - lineDecorationsWidth;
 
@@ -2970,7 +2985,14 @@ export class EditorLayoutInfoComputer extends ComputedEditorOption<EditorOption.
 			decorationsLeft += minimapLayout.minimapWidth;
 			contentLeft += minimapLayout.minimapWidth;
 		}
+
 		const contentWidth = remainingWidth - minimapLayout.minimapWidth;
+
+		if (marginSide === 'left') {
+			contentLeft += marginWidth;
+		} else {
+			marginLeft += contentWidth;
+		}
 
 		// (leaving 2px for the cursor to have space after the last character)
 		const viewportColumn = Math.max(1, Math.floor((contentWidth - verticalScrollbarWidth - 2) / typicalHalfwidthCharacterWidth));
@@ -3001,6 +3023,9 @@ export class EditorLayoutInfoComputer extends ComputedEditorOption<EditorOption.
 
 			contentLeft: contentLeft,
 			contentWidth: contentWidth,
+
+			marginLeft: marginLeft,
+			marginWidth: marginWidth,
 
 			minimap: minimapLayout,
 
@@ -3354,6 +3379,58 @@ class EditorLineHeight extends EditorFloatOption<EditorOption.lineHeight> {
 		// Moreover, the final lineHeight respects the editor zoom level.
 		// So take the result from env.fontInfo
 		return env.fontInfo.lineHeight;
+	}
+}
+
+//#endregion
+
+//#region margin
+
+export interface IEditorMarginOptions {
+	/**
+	 * Control the side of the margin in editor.
+	 * Defaults to 'right'.
+	 */
+	side?: 'right' | 'left';
+}
+
+/**
+ * @internal
+ */
+export type EditorMarginOptions = Readonly<Required<IEditorMarginOptions>>;
+
+class EditorMargin extends BaseEditorOption<EditorOption.margin, IEditorMarginOptions, EditorMarginOptions> {
+
+	constructor() {
+		const defaults: EditorMarginOptions = {
+			side: 'right',
+		};
+		super(
+			EditorOption.margin, 'margin', defaults,
+			{
+				'editor.margin.side': {
+					type: 'string',
+					enum: ['left', 'right'],
+					enumDescriptions: [
+						nls.localize('margin.side.left', ''),
+						nls.localize('margin.side.right', ''),
+					],
+					default: defaults.side,
+					description: nls.localize('margin.side', ''),
+				},
+			}
+		);
+	}
+
+	public validate(_input: unknown): EditorMarginOptions {
+		if (!_input || typeof _input !== 'object') {
+			return this.defaultValue;
+		}
+		const input = _input as Unknown<IEditorMarginOptions>;
+
+		return {
+			side: stringSet<'right' | 'left'>(input.side, this.defaultValue.side, ['right', 'left']),
+		};
 	}
 }
 
@@ -5866,6 +5943,7 @@ export const enum EditorOption {
 	linkedEditing,
 	links,
 	matchBrackets,
+	margin,
 	minimap,
 	mouseStyle,
 	mouseWheelScrollSensitivity,
@@ -6408,6 +6486,7 @@ export const EditorOptions = {
 		['always', 'near', 'never'] as const,
 		{ description: nls.localize('matchBrackets', "Highlight matching brackets.") }
 	)),
+	margin: register(new EditorMargin()),
 	minimap: register(new EditorMinimap()),
 	mouseStyle: register(new EditorStringEnumOption(
 		EditorOption.mouseStyle, 'mouseStyle',

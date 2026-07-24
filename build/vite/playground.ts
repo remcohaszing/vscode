@@ -62,11 +62,17 @@ const verticalScrollbarSize = 16;
 const horizontalScrollbarSize = 12;
 const editor = monaco.editor.create(document.getElementById('editor')!, {
 	automaticLayout: true,
+	cursorBlinking: 'solid',
 	fontFamily: 'arial',
-	minimap: { enabled: false },
+	glyphMargin: false,
+	margin: {
+		side: 'right'
+	},
+	minimap: { enabled: false, },
 	scrollbar: {
 		horizontalScrollbarSize,
-		verticalScrollbarSize
+		verticalScrollbarSize,
+		verticalPosition: 'left'
 	},
 	wordWrap: 'on',
 	wrappingStrategy: 'advanced',

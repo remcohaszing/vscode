@@ -28,15 +28,13 @@ h1 {
 }
 
 .buttons {
-	align-items: center;
-	display: flex;
-	gap: 0.5rem;
-	justify-content: center;
-	margin: 0.5rem 1rem 0;
+	text-align: center;
 
 	& label {
 		box-sizing: border-box;
+		display: inline-block;
 		flex: 1 0 20%;
+		margin: 0.5rem;
 		border: 1px solid #666666;
 		padding: 0.5rem;
 	}

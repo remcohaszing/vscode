@@ -66,13 +66,12 @@ const editor = monaco.editor.create(document.getElementById('editor')!, {
 	fontFamily: 'arial',
 	glyphMargin: false,
 	margin: {
-		side: 'right'
+		side: 'left'
 	},
 	minimap: { enabled: false, },
 	scrollbar: {
 		horizontalScrollbarSize,
 		verticalScrollbarSize,
-		verticalPosition: 'left'
 	},
 	wordWrap: 'on',
 	wrappingStrategy: 'advanced',
@@ -179,4 +178,23 @@ monaco.editor.EditorZoom.onDidChangeZoomLevel((zoomLevel) => {
 	});
 
 	editor.getContainerDomNode().style.width = `${256 * factor}px`;
+});
+
+const scrollbarPosition = document.getElementById('scrollbar-position') as HTMLSelectElement;
+scrollbarPosition.addEventListener('change', event => {
+	editor.updateOptions({
+		scrollbar: {
+			verticalPosition: scrollbarPosition.value
+		}
+	});
+});
+
+
+const marginPosition = document.getElementById('margin-position') as HTMLSelectElement;
+marginPosition.addEventListener('change', event => {
+	editor.updateOptions({
+		margin: {
+			side: marginPosition.value
+		}
+	});
 });

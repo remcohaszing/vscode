@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as arrays from '../../base/common/arrays.js';
-import { IScrollPosition, Scrollable } from '../../base/common/scrollable.js';
+import { IScrollPosition, Scrollable, VerticalScrollbarPosition } from '../../base/common/scrollable.js';
 import * as strings from '../../base/common/strings.js';
 import { ISimpleModel } from './viewModel/screenReaderSimpleModel.js';
 import { ICoordinatesConverter } from './coordinatesConverter.js';
@@ -143,6 +143,8 @@ export interface IViewLayout {
 	isAfterLines(verticalOffset: number): boolean;
 	isInTopPadding(verticalOffset: number): boolean;
 	isInBottomPadding(verticalOffset: number): boolean;
+	getScrollbarWidth(): number;
+	getScrollbarPosition(): VerticalScrollbarPosition;
 	getLineNumberAtVerticalOffset(verticalOffset: number): number;
 	getVerticalOffsetForLineNumber(lineNumber: number, includeViewZones?: boolean): number;
 	getVerticalOffsetAfterLineNumber(lineNumber: number, includeViewZones?: boolean): number;

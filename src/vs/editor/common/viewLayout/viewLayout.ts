@@ -5,7 +5,7 @@
 
 import { Event, Emitter } from '../../../base/common/event.js';
 import { Disposable, IDisposable } from '../../../base/common/lifecycle.js';
-import { IScrollPosition, ScrollEvent, Scrollable, ScrollbarVisibility, INewScrollPosition } from '../../../base/common/scrollable.js';
+import { IScrollPosition, ScrollEvent, Scrollable, ScrollbarVisibility, INewScrollPosition, VerticalScrollbarPosition } from '../../../base/common/scrollable.js';
 import { ConfigurationChangedEvent, EditorOption } from '../config/editorOptions.js';
 import { ScrollType } from '../editorCommon.js';
 import { IEditorConfiguration } from '../config/editorConfiguration.js';
@@ -157,7 +157,6 @@ class EditorScrollable extends Disposable {
 export class ViewLayout extends Disposable implements IViewLayout {
 
 	private readonly _configuration: IEditorConfiguration;
-	private readonly _lines: IViewModelLines;
 	private readonly _linesLayout: LinesLayout;
 	private _maxLineWidth: number;
 	private _overlayWidgetsMinWidth: number;
@@ -174,7 +173,6 @@ export class ViewLayout extends Disposable implements IViewLayout {
 		const layoutInfo = options.get(EditorOption.layoutInfo);
 		const padding = options.get(EditorOption.padding);
 
-		this._lines = lines;
 		this._linesLayout = new LinesLayout(lines, lineCount, options.get(EditorOption.lineHeight), padding.top, padding.bottom, customLineHeightData);
 		this._maxLineWidth = 0;
 		this._overlayWidgetsMinWidth = 0;
@@ -410,6 +408,16 @@ export class ViewLayout extends Disposable implements IViewLayout {
 	}
 	public isInBottomPadding(verticalOffset: number): boolean {
 		return this._linesLayout.isInBottomPadding(verticalOffset);
+	}
+
+	public getScrollbarWidth(): number {
+		const layoutInfo = this._configuration.options.get(EditorOption.layoutInfo);
+		return layoutInfo.verticalScrollbarWidth;
+	}
+
+	public getScrollbarPosition(): VerticalScrollbarPosition {
+		const scrollbar = this._configuration.options.get(EditorOption.scrollbar);
+		return scrollbar.verticalPosition;
 	}
 
 	public getLineNumberAtVerticalOffset(verticalOffset: number): number {

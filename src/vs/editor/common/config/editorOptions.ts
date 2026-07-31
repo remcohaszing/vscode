@@ -2442,11 +2442,7 @@ export interface OverviewRulerPosition {
 	/**
 	 * Left position for the overview ruler
 	 */
-	readonly left: number | undefined;
-	/**
-	 * Right position for the overview ruler
-	 */
-	readonly right: number | undefined;
+	readonly left: number;
 }
 
 export const enum RenderMinimap {
@@ -2670,8 +2666,7 @@ export class EditorLayoutInfoComputer extends ComputedEditorOption<EditorOption.
 				top: 0,
 				width: 0,
 				height: 0,
-				right: 0,
-				left: undefined
+				left: 0
 			}
 		});
 	}
@@ -3042,8 +3037,7 @@ export class EditorLayoutInfoComputer extends ComputedEditorOption<EditorOption.
 				top: verticalArrowSize,
 				width: verticalScrollbarWidth,
 				height: (outerHeight - 2 * verticalArrowSize),
-				left: verticalScrollbarPosition === VerticalScrollbarPosition.Left ? 0 : undefined,
-				right: verticalScrollbarPosition === VerticalScrollbarPosition.Left ? undefined : 0
+				left: verticalScrollbarPosition === VerticalScrollbarPosition.Left ? 0 : contentWidth - verticalScrollbarWidth,
 			}
 		};
 	}

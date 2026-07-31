@@ -65,9 +65,6 @@ const editor = monaco.editor.create(document.getElementById('editor')!, {
 	cursorBlinking: 'solid',
 	fontFamily: 'arial',
 	glyphMargin: false,
-	margin: {
-		side: 'left'
-	},
 	minimap: { enabled: false, },
 	scrollbar: {
 		horizontalScrollbarSize,

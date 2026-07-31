@@ -3397,7 +3397,7 @@ class EditorMargin extends BaseEditorOption<EditorOption.margin, IEditorMarginOp
 
 	constructor() {
 		const defaults: EditorMarginOptions = {
-			side: 'right',
+			side: 'left',
 		};
 		super(
 			EditorOption.margin, 'margin', defaults,

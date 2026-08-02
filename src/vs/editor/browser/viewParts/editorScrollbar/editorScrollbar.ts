@@ -15,6 +15,7 @@ import * as viewEvents from '../../../common/viewEvents.js';
 import { getThemeTypeSelector } from '../../../../platform/theme/common/themeService.js';
 import { EditorOption } from '../../../common/config/editorOptions.js';
 import { IMouseWheelEvent } from '../../../../base/browser/mouseEvent.js';
+import { VerticalScrollbarPosition } from '../../../../base/common/scrollable.js';
 
 /**
  * The editor scrollbar built on VS Code's scrollable element that sits beside
@@ -40,6 +41,10 @@ export class EditorScrollbar extends ViewPart {
 		const fastScrollSensitivity = options.get(EditorOption.fastScrollSensitivity);
 		const scrollPredominantAxis = options.get(EditorOption.scrollPredominantAxis);
 		const inertialScroll = options.get(EditorOption.inertialScroll);
+		const layoutInfo = options.get(EditorOption.layoutInfo);
+		const verticalLeft = scrollbar.verticalPosition === VerticalScrollbarPosition.Left
+			? 0
+			: layoutInfo.contentWidth - scrollbar.verticalScrollbarSize;
 
 		const scrollbarOptions: ScrollableElementCreationOptions = {
 			listenOnDomNode: viewDomNode.domNode,
@@ -53,6 +58,7 @@ export class EditorScrollbar extends ViewPart {
 			horizontalHasArrows: scrollbar.horizontalHasArrows,
 			verticalScrollbarSize: scrollbar.verticalScrollbarSize,
 			verticalSliderSize: scrollbar.verticalSliderSize,
+			verticalLeft: verticalLeft,
 			verticalPosition: scrollbar.verticalPosition,
 			horizontalScrollbarSize: scrollbar.horizontalScrollbarSize,
 			horizontalSliderSize: scrollbar.horizontalSliderSize,
@@ -147,18 +153,24 @@ export class EditorScrollbar extends ViewPart {
 	public override onConfigurationChanged(e: viewEvents.ViewConfigurationChangedEvent): boolean {
 		if (
 			e.hasChanged(EditorOption.scrollbar)
+			|| e.hasChanged(EditorOption.layoutInfo)
 			|| e.hasChanged(EditorOption.mouseWheelScrollSensitivity)
 			|| e.hasChanged(EditorOption.fastScrollSensitivity)
 		) {
 			const options = this._context.configuration.options;
+			const layoutInfo = options.get(EditorOption.layoutInfo);
 			const scrollbar = options.get(EditorOption.scrollbar);
 			const mouseWheelScrollSensitivity = options.get(EditorOption.mouseWheelScrollSensitivity);
 			const fastScrollSensitivity = options.get(EditorOption.fastScrollSensitivity);
 			const scrollPredominantAxis = options.get(EditorOption.scrollPredominantAxis);
+			const verticalLeft = scrollbar.verticalPosition === VerticalScrollbarPosition.Left
+				? 0
+				: layoutInfo.contentWidth - scrollbar.verticalScrollbarSize;
 			const newOpts: ScrollableElementChangeOptions = {
 				vertical: scrollbar.vertical,
 				horizontal: scrollbar.horizontal,
 				verticalScrollbarSize: scrollbar.verticalScrollbarSize,
+				verticalScrollbarLeft: verticalLeft,
 				horizontalScrollbarSize: scrollbar.horizontalScrollbarSize,
 				scrollByPage: scrollbar.scrollByPage,
 				handleMouseWheel: scrollbar.handleMouseWheel,

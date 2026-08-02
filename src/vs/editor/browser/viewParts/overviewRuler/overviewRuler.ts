@@ -93,7 +93,7 @@ export class OverviewRuler extends ViewEventHandler implements IOverviewRuler {
 
 	public setLayout(position: OverviewRulerPosition): void {
 		this._domNode.setTop(position.top);
-		this._domNode.setRight(position.right!);
+		this._domNode.setLeft(position.left);
 
 		let hasChanged = false;
 		hasChanged = this._zoneManager.setDOMWidth(position.width) || hasChanged;

@@ -16,7 +16,7 @@ import { TimeoutTimer } from '../../../common/async.js';
 import { Emitter, Event } from '../../../common/event.js';
 import { IDisposable, dispose } from '../../../common/lifecycle.js';
 import * as platform from '../../../common/platform.js';
-import { INewScrollDimensions, INewScrollPosition, IScrollDimensions, IScrollPosition, ScrollEvent, Scrollable, ScrollbarVisibility, VerticalScrollbarPosition } from '../../../common/scrollable.js';
+import { INewScrollDimensions, INewScrollPosition, IScrollDimensions, IScrollPosition, ScrollEvent, Scrollable, ScrollbarVisibility } from '../../../common/scrollable.js';
 import './media/scrollbars.css';
 
 const HIDE_TIMEOUT = 500;
@@ -351,6 +351,9 @@ export abstract class AbstractScrollableElement extends Widget {
 		}
 		if (typeof newOptions.verticalScrollbarSize !== 'undefined') {
 			this._options.verticalScrollbarSize = newOptions.verticalScrollbarSize;
+		}
+		if (typeof newOptions.verticalScrollbarLeft !== 'undefined') {
+			this._options.verticalLeft = newOptions.verticalScrollbarLeft;
 		}
 		if (typeof newOptions.scrollByPage !== 'undefined') {
 			this._options.scrollByPage = newOptions.scrollByPage;
@@ -754,7 +757,7 @@ function resolveOptions(opts: ScrollableElementCreationOptions): ScrollableEleme
 		vertical: (typeof opts.vertical !== 'undefined' ? opts.vertical : ScrollbarVisibility.Auto),
 		verticalScrollbarSize: (typeof opts.verticalScrollbarSize !== 'undefined' ? opts.verticalScrollbarSize : 10),
 		verticalHasArrows: (typeof opts.verticalHasArrows !== 'undefined' ? opts.verticalHasArrows : false),
-		verticalPosition: opts.verticalPosition ?? VerticalScrollbarPosition.Right,
+		verticalLeft: opts.verticalLeft!,
 		verticalSliderSize: (typeof opts.verticalSliderSize !== 'undefined' ? opts.verticalSliderSize : 0),
 
 		scrollByPage: (typeof opts.scrollByPage !== 'undefined' ? opts.scrollByPage : false)

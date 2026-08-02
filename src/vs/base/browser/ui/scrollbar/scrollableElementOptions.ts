@@ -123,6 +123,7 @@ export interface ScrollableElementCreationOptions {
 	 * Defaults to false.
 	 */
 	verticalHasArrows?: boolean;
+	verticalLeft?: number;
 	/**
 	 * Control the position of the vertical scrollbar.
 	 * Defaults to `right`
@@ -144,6 +145,7 @@ export interface ScrollableElementChangeOptions {
 	horizontalScrollbarSize?: number;
 	vertical?: ScrollbarVisibility;
 	verticalScrollbarSize?: number;
+	verticalScrollbarLeft?: number;
 	scrollByPage?: boolean;
 }
 
@@ -171,6 +173,6 @@ export interface ScrollableElementResolvedOptions {
 	verticalScrollbarSize: number;
 	verticalSliderSize: number;
 	verticalHasArrows: boolean;
-	verticalPosition: VerticalScrollbarPosition;
+	verticalLeft: number;
 	scrollByPage: boolean;
 }

@@ -54,11 +54,37 @@ For the time will soon come when hobbits will shape the fortunes of all.
 היא הגיעה ליצור גולום, שלקח אותה עמוק לתוך מנהרות הרי הערפל. ושם היא כילתה אותו. הטבעת העניקה לגולום חיים ארוכים באופן לא טבעי. במשך חמש מאות שנה היא הרעילה את מוחו, ובאפלולית מערתו של גולום היא חיכתה. החושך זחל חזרה ליערות העולם. שמועה על צל במזרח, לחישות של פחד אלמוני, וטבעת הכוח הבינה שזמנה הגיע. היא נטשה את גולום, אך אז קרה משהו שהטבעת לא התכוונה אליו. היא נאספה על ידי היצור הכי לא סביר שניתן להעלות על הדעת: הוביט, בילבו בגינס, מהפלך.
 
 כי בקרוב יגיע הזמן שבו הוביטים יעצבו את גורלם של כולם.
+
+---
+
+لقد تغيّر العالم.
+
+أشعر بذلك في الماء.
+
+أشعر به في الأرض.
+
+أشمّه في الهواء.
+
+ضاع الكثير مما كان، إذ لم يبقَ أحدٌ اليوم يتذكره.
+
+بدأ كل شيء بصنع الخواتم العظيمة. ثلاثة منها أُعطيت للجان، الخالدين، الأحكم والأجمل بين جميع المخلوقات. سبعة لأسياد الأقزام، عمال المناجم والحرفيين العظماء في قاعات الجبال. وتسعة، تسعة خواتم أُهديت لجنس البشر، الذين يتوقون إلى السلطة فوق كل شيء. ففي هذه الخواتم كانت تكمن القوة والإرادة لحكم كل عرق. لكنهم جميعًا خُدعوا، فقد صُنع خاتم آخر. في أعماق أرض موردور، في نيران جبل الهلاك، صنع سيد الظلام ساورون خاتمًا رئيسيًا، وصب فيه قسوته وحقده وإرادته في السيطرة على كل أشكال الحياة.
+
+خاتم واحد ليحكمهم جميعًا.
+
+سقطت أراضي الأرض الوسطى الحرة، واحدة تلو الأخرى، تحت وطأة الخاتم، لكن قاومها البعض. تحالف أخير من البشر والجان زحف ضد جيوش موردور، وعلى سفوح جبل الهلاك، قاتلوا من أجل حرية الأرض الوسطى. كان النصر وشيكًا، لكن قوة الخاتم كانت عصية على الحل. في تلك اللحظة، حين تلاشت كل الآمال، حمل إيسيلدور، ابن الملك، سيف أبيه.
+
+هُزم ساورون، عدو شعوب الأرض الوسطى الحرة. انتقل الخاتم إلى إيسيلدور، الذي أُتيحت له هذه الفرصة الوحيدة للقضاء على الشر إلى الأبد، لكن قلوب البشر سهلة الفساد. وخاتم السلطة له إرادته الخاصة. خان إيسيلدور، فكانت النتيجة موته.
+
+وضاعت أشياء كان ينبغي ألا تُنسى. تحوّل التاريخ إلى أسطورة. والأسطورة إلى خرافة. ولما يقارب ألفين وخمسمائة عام، غاب الخاتم عن كل معارف التاريخ. إلى أن سنحت الفرصة، فوقع الخاتم في شباك حامل آخر.
+
+وصل الخاتم إلى غولوم، الذي اقتاده إلى أعماق أنفاق الجبال الضبابية. وهناك التهمه. منح الخاتم غولوم عمراً مديداً غير طبيعي. لخمسة قرون، سمّم عقله، وفي عتمة كهف غولوم، انتظر. عاد الظلام ليخيم على غابات العالم. انتشرت شائعات عن ظل في الشرق، وهمسات عن خوف لا اسم له، وأدرك خاتم القوة أن وقته قد حان. تخلى عن غولوم، ولكن حدث ما لم يكن في حسبان الخاتم. التقطه مخلوق لا يُصدق: هوبيت، بيلبو باجينز، من شاير.
+
+لأن الوقت سيأتي قريباً حين يُحدد الهوبيت مصائر الجميع.
 `;
 
 const model = monaco.editor.createModel(content, undefined, monaco.Uri.file('example.ts'));
 
-const verticalScrollbarSize = 16;
+const scrollbarSizeRange = document.getElementById('scrollbar-size') as HTMLInputElement;
 const horizontalScrollbarSize = 12;
 const editor = monaco.editor.create(document.getElementById('editor')!, {
 	automaticLayout: true,
@@ -68,7 +94,7 @@ const editor = monaco.editor.create(document.getElementById('editor')!, {
 	minimap: { enabled: false, },
 	scrollbar: {
 		horizontalScrollbarSize,
-		verticalScrollbarSize,
+		verticalScrollbarSize: scrollbarSizeRange.valueAsNumber,
 	},
 	wordWrap: 'on',
 	wrappingStrategy: 'advanced',
@@ -170,7 +196,7 @@ monaco.editor.EditorZoom.onDidChangeZoomLevel((zoomLevel) => {
 	editor.updateOptions({
 		scrollbar: {
 			horizontalScrollbarSize: horizontalScrollbarSize * factor,
-			verticalScrollbarSize: verticalScrollbarSize * factor
+			verticalScrollbarSize: scrollbarSizeRange.valueAsNumber * factor
 		}
 	});
 
@@ -182,6 +208,14 @@ scrollbarPosition.addEventListener('change', event => {
 	editor.updateOptions({
 		scrollbar: {
 			verticalPosition: scrollbarPosition.value
+		}
+	});
+});
+
+scrollbarSizeRange.addEventListener('change', event => {
+	editor.updateOptions({
+		scrollbar: {
+			verticalScrollbarSize: scrollbarSizeRange.valueAsNumber * (1 + monaco.editor.EditorZoom.getZoomLevel() * 0.1)
 		}
 	});
 });

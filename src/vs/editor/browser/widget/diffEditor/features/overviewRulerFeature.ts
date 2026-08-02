@@ -133,15 +133,13 @@ export class OverviewRulerFeature extends Disposable {
 					originalOverviewRuler.setLayout({
 						top: 0,
 						height: height,
-						right: freeSpace + OverviewRulerFeature.ONE_OVERVIEW_WIDTH,
-						left: undefined,
+						left: 0,
 						width: OverviewRulerFeature.ONE_OVERVIEW_WIDTH,
 					});
 					modifiedOverviewRuler.setLayout({
 						top: 0,
 						height: height,
-						right: 0,
-						left: undefined,
+						left: freeSpace + OverviewRulerFeature.ONE_OVERVIEW_WIDTH,
 						width: OverviewRulerFeature.ONE_OVERVIEW_WIDTH,
 					});
 					const scrollTop = this._editors.modifiedScrollTop.read(reader);

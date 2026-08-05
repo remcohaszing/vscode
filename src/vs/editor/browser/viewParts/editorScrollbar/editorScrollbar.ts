@@ -42,7 +42,8 @@ export class EditorScrollbar extends ViewPart {
 		const scrollPredominantAxis = options.get(EditorOption.scrollPredominantAxis);
 		const inertialScroll = options.get(EditorOption.inertialScroll);
 		const layoutInfo = options.get(EditorOption.layoutInfo);
-		const verticalLeft = scrollbar.verticalPosition === VerticalScrollbarPosition.Left
+		const isVerticalLeft = scrollbar.verticalPosition === VerticalScrollbarPosition.Left;
+		const verticalLeft = isVerticalLeft
 			? 0
 			: layoutInfo.contentWidth - scrollbar.verticalScrollbarSize;
 
@@ -59,6 +60,7 @@ export class EditorScrollbar extends ViewPart {
 			verticalScrollbarSize: scrollbar.verticalScrollbarSize,
 			verticalSliderSize: scrollbar.verticalSliderSize,
 			verticalLeft: verticalLeft,
+			isVerticalLeft: isVerticalLeft,
 			verticalPosition: scrollbar.verticalPosition,
 			horizontalScrollbarSize: scrollbar.horizontalScrollbarSize,
 			horizontalSliderSize: scrollbar.horizontalSliderSize,

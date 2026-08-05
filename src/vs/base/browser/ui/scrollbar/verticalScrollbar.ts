@@ -15,6 +15,7 @@ import { INewScrollPosition, Scrollable, ScrollbarVisibility, ScrollEvent } from
 
 export class VerticalScrollbar extends AbstractScrollbar {
 	private _left: number;
+	private _isLeft: boolean;
 
 	constructor(scrollable: Scrollable, options: ScrollableElementResolvedOptions, host: ScrollbarHost) {
 		const scrollDimensions = scrollable.getScrollDimensions();
@@ -38,6 +39,7 @@ export class VerticalScrollbar extends AbstractScrollbar {
 		});
 
 		this._left = options.verticalLeft;
+		this._isLeft = options.isVerticalLeft;
 		if (options.verticalHasArrows) {
 			const arrowDelta = (options.arrowSize - ARROW_IMG_SIZE) / 2;
 			const scrollbarDelta = (options.verticalScrollbarSize - ARROW_IMG_SIZE) / 2;
@@ -86,7 +88,7 @@ export class VerticalScrollbar extends AbstractScrollbar {
 		this._shouldRender = this._onElementScrollSize(e.scrollHeight) || this._shouldRender;
 		this._shouldRender = this._onElementScrollPosition(e.scrollTop) || this._shouldRender;
 		this._shouldRender = this._onElementSize(e.height) || this._shouldRender;
-		this._shouldRender = e.left || this._shouldRender;
+		this._shouldRender = true;
 		return this._shouldRender;
 	}
 
@@ -117,9 +119,8 @@ export class VerticalScrollbar extends AbstractScrollbar {
 		this._visibilityController.setVisibility(options.vertical);
 		this._scrollByPage = options.scrollByPage;
 		this._left = options.verticalLeft;
+		this._isLeft = options.isVerticalLeft;
 		this._shouldRender = true;
-		if (this._left !== options.verticalLeft) {
-		}
 	}
 
 }

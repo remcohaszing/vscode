@@ -193,7 +193,7 @@ export class ViewLine implements IVisibleLine {
 		sb.appendString(String(lineHeight));
 		if (lineData.textDirection === TextDirection.RTL) {
 			sb.appendString('px;padding-right:');
-			sb.appendString(String(options.verticalScrollbarSize));
+			sb.appendString(String(options.verticalScrollbarSize + 2));
 		}
 		sb.appendString('px;" class="');
 		sb.appendString(ViewLine.CLASS_NAME);

@@ -86,6 +86,7 @@ export class VerticalScrollbar extends AbstractScrollbar {
 		this._shouldRender = this._onElementScrollSize(e.scrollHeight) || this._shouldRender;
 		this._shouldRender = this._onElementScrollPosition(e.scrollTop) || this._shouldRender;
 		this._shouldRender = this._onElementSize(e.height) || this._shouldRender;
+		this._shouldRender = e.left || this._shouldRender;
 		return this._shouldRender;
 	}
 

@@ -16,7 +16,7 @@ import { TimeoutTimer } from '../../../common/async.js';
 import { Emitter, Event } from '../../../common/event.js';
 import { IDisposable, dispose } from '../../../common/lifecycle.js';
 import * as platform from '../../../common/platform.js';
-import { INewScrollDimensions, INewScrollPosition, IScrollDimensions, IScrollPosition, ScrollEvent, Scrollable, ScrollbarVisibility } from '../../../common/scrollable.js';
+import { INewScrollDimensions, INewScrollPosition, IScrollDimensions, IScrollPosition, ScrollEvent, Scrollable, ScrollbarVisibility, VerticalScrollbarPosition } from '../../../common/scrollable.js';
 import './media/scrollbars.css';
 
 const HIDE_TIMEOUT = 500;
@@ -690,6 +690,7 @@ export class DomScrollableElement extends AbstractScrollableElement {
 		options.mouseWheelSmoothScroll = false;
 		const scrollable = new Scrollable({
 			forceIntegerValues: false, // See https://github.com/microsoft/vscode/issues/139877
+			left: options.verticalPosition === VerticalScrollbarPosition.Left,
 			smoothScrollDuration: 0,
 			scheduleAtNextAnimationFrame: (callback) => dom.scheduleAtNextAnimationFrame(dom.getWindow(element), callback)
 		});

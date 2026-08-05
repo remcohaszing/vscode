@@ -22,6 +22,7 @@ class EditorScrollDimensions {
 	public readonly width: number;
 	public readonly contentWidth: number;
 	public readonly scrollWidth: number;
+	public readonly left: boolean;
 
 	public readonly height: number;
 	public readonly contentHeight: number;
@@ -30,6 +31,7 @@ class EditorScrollDimensions {
 	constructor(
 		width: number,
 		contentWidth: number,
+		left: boolean,
 		height: number,
 		contentHeight: number,
 	) {
@@ -55,6 +57,7 @@ class EditorScrollDimensions {
 		this.width = width;
 		this.contentWidth = contentWidth;
 		this.scrollWidth = Math.max(width, contentWidth);
+		this.left = left;
 
 		this.height = height;
 		this.contentHeight = contentHeight;
@@ -65,6 +68,7 @@ class EditorScrollDimensions {
 		return (
 			this.width === other.width
 			&& this.contentWidth === other.contentWidth
+			&& this.left === other.left
 			&& this.height === other.height
 			&& this.contentHeight === other.contentHeight
 		);
@@ -83,7 +87,7 @@ class EditorScrollable extends Disposable {
 
 	constructor(smoothScrollDuration: number, scheduleAtNextAnimationFrame: (callback: () => void) => IDisposable) {
 		super();
-		this._dimensions = new EditorScrollDimensions(0, 0, 0, 0);
+		this._dimensions = new EditorScrollDimensions(0, 0, false, 0, 0);
 		this._scrollable = this._register(new Scrollable({
 			forceIntegerValues: true,
 			smoothScrollDuration,
@@ -120,7 +124,8 @@ class EditorScrollable extends Disposable {
 			width: dimensions.width,
 			scrollWidth: dimensions.scrollWidth,
 			height: dimensions.height,
-			scrollHeight: dimensions.scrollHeight
+			scrollHeight: dimensions.scrollHeight,
+			left: dimensions.left
 		}, true);
 
 		const contentWidthChanged = (oldDimensions.contentWidth !== dimensions.contentWidth);
@@ -183,6 +188,7 @@ export class ViewLayout extends Disposable implements IViewLayout {
 		this._scrollable.setScrollDimensions(new EditorScrollDimensions(
 			layoutInfo.contentWidth,
 			0,
+			options.get(EditorOption.scrollbar).verticalPosition === VerticalScrollbarPosition.Left,
 			layoutInfo.height,
 			0
 		));
@@ -228,6 +234,7 @@ export class ViewLayout extends Disposable implements IViewLayout {
 			this._scrollable.setScrollDimensions(new EditorScrollDimensions(
 				width,
 				scrollDimensions.contentWidth,
+				options.get(EditorOption.scrollbar).verticalPosition === VerticalScrollbarPosition.Left,
 				height,
 				this._getContentHeight(width, height, contentWidth)
 			));
@@ -285,6 +292,7 @@ export class ViewLayout extends Disposable implements IViewLayout {
 		this._scrollable.setScrollDimensions(new EditorScrollDimensions(
 			width,
 			scrollDimensions.contentWidth,
+			scrollDimensions.left,
 			height,
 			this._getContentHeight(width, height, contentWidth)
 		));
@@ -352,6 +360,7 @@ export class ViewLayout extends Disposable implements IViewLayout {
 		this._scrollable.setScrollDimensions(new EditorScrollDimensions(
 			scrollDimensions.width,
 			this._computeContentWidth(),
+			scrollDimensions.left,
 			scrollDimensions.height,
 			scrollDimensions.contentHeight
 		));

@@ -27,6 +27,7 @@ export interface ScrollEvent {
 	width: number;
 	scrollWidth: number;
 	scrollLeft: number;
+	left: boolean;
 
 	oldHeight: number;
 	oldScrollHeight: number;
@@ -57,6 +58,7 @@ export class ScrollState implements IScrollDimensions, IScrollPosition {
 	public readonly height: number;
 	public readonly scrollHeight: number;
 	public readonly scrollTop: number;
+	public readonly left;
 
 	constructor(
 		private readonly _forceIntegerValues: boolean,
@@ -65,7 +67,8 @@ export class ScrollState implements IScrollDimensions, IScrollPosition {
 		scrollLeft: number,
 		height: number,
 		scrollHeight: number,
-		scrollTop: number
+		scrollTop: number,
+		left: boolean
 	) {
 		if (this._forceIntegerValues) {
 			width = width | 0;
@@ -105,6 +108,7 @@ export class ScrollState implements IScrollDimensions, IScrollPosition {
 		this.height = height;
 		this.scrollHeight = scrollHeight;
 		this.scrollTop = scrollTop;
+		this.left = left;
 	}
 
 	public equals(other: ScrollState): boolean {
@@ -117,6 +121,7 @@ export class ScrollState implements IScrollDimensions, IScrollPosition {
 			&& this.height === other.height
 			&& this.scrollHeight === other.scrollHeight
 			&& this.scrollTop === other.scrollTop
+			&& this.left === other.left
 		);
 	}
 
@@ -128,7 +133,8 @@ export class ScrollState implements IScrollDimensions, IScrollPosition {
 			useRawScrollPositions ? this.rawScrollLeft : this.scrollLeft,
 			(typeof update.height !== 'undefined' ? update.height : this.height),
 			(typeof update.scrollHeight !== 'undefined' ? update.scrollHeight : this.scrollHeight),
-			useRawScrollPositions ? this.rawScrollTop : this.scrollTop
+			useRawScrollPositions ? this.rawScrollTop : this.scrollTop,
+			update.left ?? this.left
 		);
 	}
 
@@ -140,7 +146,8 @@ export class ScrollState implements IScrollDimensions, IScrollPosition {
 			(typeof update.scrollLeft !== 'undefined' ? update.scrollLeft : this.rawScrollLeft),
 			this.height,
 			this.scrollHeight,
-			(typeof update.scrollTop !== 'undefined' ? update.scrollTop : this.rawScrollTop)
+			(typeof update.scrollTop !== 'undefined' ? update.scrollTop : this.rawScrollTop),
+			this.left
 		);
 	}
 
@@ -162,6 +169,7 @@ export class ScrollState implements IScrollDimensions, IScrollPosition {
 			width: this.width,
 			scrollWidth: this.scrollWidth,
 			scrollLeft: this.scrollLeft,
+			left: this.left,
 
 			oldHeight: previous.height,
 			oldScrollHeight: previous.scrollHeight,
@@ -190,6 +198,7 @@ export interface IScrollDimensions {
 	readonly scrollHeight: number;
 }
 export interface INewScrollDimensions {
+	left?: boolean;
 	width?: number;
 	scrollWidth?: number;
 	height?: number;
@@ -217,6 +226,7 @@ export interface IScrollableOptions {
 	 * Define if the scroll values should always be integers.
 	 */
 	forceIntegerValues: boolean;
+	left?: boolean;
 	/**
 	 * Set the duration (ms) used for smooth scroll animations.
 	 */
@@ -244,7 +254,7 @@ export class Scrollable extends Disposable {
 
 		this._smoothScrollDuration = options.smoothScrollDuration;
 		this._scheduleAtNextAnimationFrame = options.scheduleAtNextAnimationFrame;
-		this._state = new ScrollState(options.forceIntegerValues, 0, 0, 0, 0, 0, 0);
+		this._state = new ScrollState(options.forceIntegerValues, 0, 0, 0, 0, 0, 0, options.left ?? false);
 		this._smoothScrolling = null;
 	}
 

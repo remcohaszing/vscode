@@ -384,11 +384,13 @@ export function renderViewLine(input: RenderLineInput, sb: StringBuilder): Rende
 			let beforeCount = 0;
 			let afterCount = 0;
 			let containsForeignElements = ForeignElementType.None;
+			let isEmpty = true;
 			for (const lineDecoration of input.lineDecorations) {
 				if (lineDecoration.type === InlineDecorationType.Before || lineDecoration.type === InlineDecorationType.After) {
 					sb.appendString(`<span class="`);
 					sb.appendString(lineDecoration.className);
 					sb.appendString(`"></span>`);
+					isEmpty = false;
 
 					if (lineDecoration.type === InlineDecorationType.Before) {
 						containsForeignElements |= ForeignElementType.Before;
@@ -399,6 +401,9 @@ export function renderViewLine(input: RenderLineInput, sb: StringBuilder): Rende
 						afterCount++;
 					}
 				}
+			}
+			if (isEmpty) {
+				sb.appendString('<span></span>');
 			}
 
 			sb.appendString(`</span>`);
